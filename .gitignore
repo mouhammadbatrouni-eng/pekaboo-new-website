@@ -32,3 +32,6 @@ pnpm-debug.log*
 # stray vite/astro caches if a command is run from a subdirectory
 src/**/node_modules/
 src/**/.astro/
+
+# Claude Code per-developer settings (machine-local, not shared)
+.claude/settings.local.json

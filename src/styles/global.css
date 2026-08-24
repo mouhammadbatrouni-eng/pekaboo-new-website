@@ -376,6 +376,12 @@
 
   --glow-a: var(--color-brand-400);
   --glow-b: var(--color-gold-400);
+  /*
+   * Resting brightness, so a page can rank its cards. Secondary grids sit low
+   * and the one card you actually want clicked sits high — the hierarchy comes
+   * from the difference between them, which is lost if everything glows hard.
+   */
+  --glow-idle: 0.75;
 
   &::before {
     content: "";
@@ -417,7 +423,7 @@
      */
     filter: drop-shadow(0 0 7px var(--glow-a));
 
-    opacity: 0.75;
+    opacity: var(--glow-idle);
     transition: opacity 0.45s ease;
   }
 

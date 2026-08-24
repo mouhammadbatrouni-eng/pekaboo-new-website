@@ -4,6 +4,7 @@ import ScrollSection from "./ScrollSection.astro";
 import SectionIntro from "./SectionIntro.astro";
 import FeatureIcon from "../ui/FeatureIcon.astro";
 import { Check, ArrowRight, ArrowLeft } from "@lucide/astro";
+import { glow } from "../../lib/glow";
 import type { Dict } from "../../lib/i18n";
 
 interface Props {
@@ -36,13 +37,18 @@ const Arrow = rtl ? ArrowLeft : ArrowRight;
     <div class="mt-14 grid gap-6 lg:grid-cols-3">
       {t.plans.items.map((plan, index) => {
         const meta = META[plan.id] ?? { icon: "attendance" };
+        /* Only the featured plan glows, and it glows at full strength. A ring
+           on all three would say nothing; on one it says "start here". */
         return (
           <article
             data-reveal
             data-reveal-delay={index * 90}
+            style={meta.featured ? glow("brand", 1) : undefined}
             class:list={[
               "relative flex flex-col rounded-xl border bg-surface p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-soft-lg",
-              meta.featured ? "border-brand-300 shadow-soft-lg" : "border-line shadow-soft hover:border-brand-200",
+              meta.featured
+                ? "glow-card border-brand-300 shadow-soft-lg"
+                : "border-line shadow-soft hover:border-brand-200",
             ]}
           >
             {meta.featured && (

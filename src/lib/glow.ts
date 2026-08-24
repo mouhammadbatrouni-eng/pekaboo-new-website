@@ -18,8 +18,16 @@ const PAIRS: Record<GlowTone, [string, string]> = {
   violet: ["--color-violet", "--color-brand-300"],
 };
 
-/** Inline `style` string setting the two custom properties `glow-card` reads. */
-export function glow(tone: GlowTone): string {
+/**
+ * Inline `style` string setting the custom properties `glow-card` reads.
+ *
+ * `idle` is the resting brightness (default 0.75). Pass it deliberately: the
+ * page ranks its cards by this number, so a grid of supporting cards should
+ * sit low and the one card you want clicked should sit high. If everything
+ * glows at the same strength the effect stops carrying any hierarchy.
+ */
+export function glow(tone: GlowTone, idle?: number): string {
   const [a, b] = PAIRS[tone];
-  return `--glow-a:var(${a});--glow-b:var(${b});`;
+  const base = `--glow-a:var(${a});--glow-b:var(${b});`;
+  return idle === undefined ? base : `${base}--glow-idle:${idle};`;
 }

@@ -97,7 +97,7 @@ const CARD_META = [
           <article
             data-reveal
             data-reveal-delay={index * 80}
-            style={glow(CARD_META[index].tone)}
+            style={glow(CARD_META[index].tone, 0.3)}
             class="glow-card rounded-xl border border-line bg-surface p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-soft-lg"
           >
             <FeatureIcon icon={CARD_META[index].icon} tone={CARD_META[index].tone} class="h-11 w-11" />
