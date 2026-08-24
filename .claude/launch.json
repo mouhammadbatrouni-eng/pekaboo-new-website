@@ -1,0 +1,25 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "peekaboo",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["astro", "dev"],
+      "port": 4321,
+      "autoPort": true
+    },
+    {
+      "name": "ratio-prototype",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "4400", "--directory", "/Users/educoreedk2/peekaboo-ratio-prototype"],
+      "port": 4400
+    },
+    {
+      "name": "portal",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "/Users/educoreedk2/peekaboo-web", "run", "dev"],
+      "port": 5173,
+      "autoPort": true
+    }
+  ]
+}

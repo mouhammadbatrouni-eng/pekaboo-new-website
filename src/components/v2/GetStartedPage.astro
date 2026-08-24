@@ -1,0 +1,67 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import StickyNav from "./StickyNav.astro";
+import Footer from "./Footer.astro";
+import SignupWizard from "./SignupWizard.astro";
+import Container from "../ui/Container.astro";
+import { getDict, alternatesFor, type Lang } from "../../lib/i18n";
+import { getSiteSettings } from "../../lib/sanity/queries";
+import { resolveSeo } from "../../lib/seo";
+
+/**
+ * Header → wizard → footer, sharing the single-page site's exact chrome.
+ *
+ * Deliberately free of marketing sections: someone who has clicked "Get
+ * started" has already been sold, and anything else on the page is a way out
+ * of the form.
+ */
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = getDict(lang);
+const rtl = t.meta.dir === "rtl";
+
+const site = await getSiteSettings();
+const seo = resolveSeo(t.signup.metaTitle, {
+  metaTitle: t.signup.metaTitle,
+  metaDescription: t.signup.metaDescription,
+}, site);
+---
+
+<BaseLayout
+  seo={seo}
+  enableTheme
+  lang={lang}
+  dir={t.meta.dir}
+  alternates={alternatesFor("getStarted")}
+  skipLabel={t.common.skipToContent}
+>
+  <StickyNav t={t} lang={lang} routeKey="getStarted" />
+
+  <main id="main-content">
+    <section class="relative overflow-hidden py-14 sm:py-20">
+      <div
+        class="pointer-events-none absolute inset-x-0 -top-52 -z-10 h-[560px] bg-[radial-gradient(58%_58%_at_50%_0%,var(--color-brand-100),transparent)]"
+        aria-hidden="true"
+      >
+      </div>
+
+      <Container>
+        <div class="mx-auto mb-10 max-w-3xl text-center">
+          <p class="mb-4 inline-flex items-center gap-2 rounded-full border border-brand-200/60 bg-surface px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-brand-ink shadow-soft">
+            <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
+            {t.signup.eyebrow}
+          </p>
+          <h1 class="text-[2.1rem] leading-[1.15] sm:text-[2.75rem]">{t.signup.heading}</h1>
+          <p class="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted">{t.signup.body}</p>
+        </div>
+
+        <SignupWizard t={t} lang={lang} />
+      </Container>
+    </section>
+  </main>
+
+  <Footer t={t} rtl={rtl} lang={lang} />
+</BaseLayout>

@@ -1,0 +1,46 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import StickyNav from "../components/v2/StickyNav.astro";
+import Footer from "../components/v2/Footer.astro";
+import Button from "../components/ui/Button.astro";
+import { Compass } from "@lucide/astro";
+import { getDict, routePath, sectionHref } from "../lib/i18n";
+import { getSiteSettings } from "../lib/sanity/queries";
+import { resolveSeo } from "../lib/seo";
+
+export const prerender = true;
+
+const lang = "en" as const;
+const t = getDict(lang);
+const site = await getSiteSettings();
+const seo = resolveSeo("Page not found", {
+  metaTitle: "Page not found — Peekaboo",
+  metaDescription: "This page doesn't exist — let's get you back on track.",
+  noIndex: true,
+}, site);
+---
+
+<BaseLayout seo={seo} enableTheme lang={lang} dir="ltr" skipLabel={t.common.skipToContent}>
+  <StickyNav t={t} lang={lang} routeKey="home" isHome={false} />
+
+  <main id="main-content" class="flex min-h-[60vh] items-center py-20">
+    <div class="mx-auto w-full max-w-xl px-6 text-center">
+      <span class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-50 text-brand-ink">
+        <Compass size={28} stroke-width={1.8} aria-hidden="true" />
+      </span>
+      <p class="mt-6 font-heading text-7xl tracking-[-0.05em] text-brand-ink">404</p>
+      <h1 class="mt-2 text-3xl">We couldn't find that page</h1>
+      <p class="mt-4 text-lg leading-relaxed text-muted">
+        The page you're looking for may have moved or no longer exists.
+      </p>
+      <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
+        <Button href={routePath("home", lang)} size="lg">Back to home</Button>
+        <Button href={sectionHref("contact", lang, false)} variant="secondary" size="lg">
+          {t.common.contactUs}
+        </Button>
+      </div>
+    </div>
+  </main>
+
+  <Footer t={t} rtl={false} lang={lang} />
+</BaseLayout>

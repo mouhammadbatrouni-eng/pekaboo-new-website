@@ -1,0 +1,7 @@
+---
+import LegalPage from "../../components/v2/LegalPage.astro";
+import { privacyAr } from "../../lib/legal/privacy";
+export const prerender = true;
+---
+
+<LegalPage lang="ar" routeKey="privacy" doc={privacyAr} />

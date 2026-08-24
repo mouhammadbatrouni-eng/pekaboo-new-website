@@ -1,0 +1,65 @@
+---
+interface Props {
+  class?: string;
+  variant?: "mark" | "full";
+  showTagline?: boolean;
+  tone?: "brand" | "light";
+  /** Where the mark links to — the homepage in the current language. */
+  href?: string;
+  /**
+   * Display utilities for the wordmark block. The header passes
+   * `hidden sm:grid` to drop the wordmark on narrow screens and free up the
+   * space the call to action needs.
+   */
+  wordmarkDisplay?: string;
+}
+
+const {
+  class: className = "",
+  variant = "full",
+  showTagline = false,
+  tone = "brand",
+  href = "/",
+  wordmarkDisplay = "grid",
+} = Astro.props;
+/**
+ * The wordmark is a supplied brand asset rather than live text, so it ships in
+ * two tones: the dark original and a white knockout. `tone="light"` sits on a
+ * permanently dark surface (the footer) and always takes the knockout, while
+ * the brand tone has to swap when the page flips to dark mode — hence the pair
+ * of images below rather than one `src`.
+ */
+const WORDMARK_DARK = "/peekaboo-wordmark.png";
+const WORDMARK_LIGHT = "/peekaboo-wordmark-light.png";
+/* Held to 24px so the lockup is no wider than the live text it replaced — the
+   header row is already tight at the xl breakpoint. */
+const wordmarkClass = "h-6 w-auto max-w-full";
+const taglineClass = tone === "light" ? "text-white/50" : "text-ink-400";
+---
+
+<a href={href} class:list={["group inline-flex items-center gap-3 shrink-0 no-underline", className]} aria-label="Peekaboo home">
+  <img
+    src="/peekaboo-mark.png"
+    alt=""
+    width="44"
+    height="44"
+    class="h-11 w-11 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5"
+  />
+  {variant === "full" && (
+    <span class:list={["min-w-0 gap-1 leading-none", wordmarkDisplay]}>
+      {tone === "light" ? (
+        <img src={WORDMARK_LIGHT} alt="Peekaboo" width="151" height="32" class={wordmarkClass} />
+      ) : (
+        <>
+          <img src={WORDMARK_DARK} alt="Peekaboo" width="151" height="32" class:list={[wordmarkClass, "dark:hidden"]} />
+          <img src={WORDMARK_LIGHT} alt="Peekaboo" width="151" height="32" class:list={[wordmarkClass, "hidden dark:block"]} />
+        </>
+      )}
+      {showTagline && (
+        <span class:list={["truncate text-[0.65rem] font-bold uppercase tracking-[0.16em]", taglineClass]}>
+          Early childhood software
+        </span>
+      )}
+    </span>
+  )}
+</a>

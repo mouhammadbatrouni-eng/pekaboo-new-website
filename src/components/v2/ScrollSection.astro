@@ -1,0 +1,115 @@
+---
+import type { SectionId } from "./SECTIONS";
+
+/**
+ * A section in the single-page journey. Registers itself with the scroll spy
+ * via `data-section`, and carries the surface/spacing choices that keep the
+ * page reading as one continuous story rather than stacked blocks.
+ */
+interface Props {
+  id: SectionId;
+  label: string;
+  surface?: "plain" | "tint" | "deep";
+  space?: "normal" | "loose";
+  class?: string;
+}
+
+const { id, label, surface = "plain", space = "normal", class: className = "" } = Astro.props;
+
+const surfaces = {
+  plain: "",
+  tint: "bg-surface-2",
+  deep: "bg-ink-950 text-ink-200",
+};
+
+const spacing = {
+  normal: "py-20 sm:py-28",
+  loose: "py-24 sm:py-32",
+};
+
+/*
+ * Tinted and deep sections carry a faint grid, matching the hero's texture so
+ * the page reads as one surface rather than stacked panels. `plain` sections
+ * stay bare on purpose: alternating textured and clean is what creates the
+ * rhythm — texturing everything would just be noise.
+ *
+ * Deliberately static. The hero's drifting aurora is the page's one piece of
+ * ambient motion; repeating it down nine sections would be the "animate
+ * everything" anti-pattern, and a real problem for motion-sensitive visitors.
+ */
+const textured = surface === "tint" || surface === "deep";
+
+/*
+ * Colour wash.
+ *
+ * Two soft blobs per band, in that section's own pair of accent colours. The
+ * palette already defines coral, mint, violet and gold — they were just barely
+ * used, so the page read as cyan-and-grey despite being an early-years brand.
+ *
+ * Mapped by id here rather than passed as a prop, so the nine section
+ * components don't each need editing, and so the sequence can be checked in
+ * one place: no two adjacent sections share a colour, or the bands would blur
+ * into each other instead of giving the scroll a rhythm.
+ *
+ * Static, like the grid. The hero's drifting aurora stays the page's only
+ * ambient motion.
+ *
+ * Opacity is capped at 0.16 by contrast, not by taste: `text-muted` sits
+ * directly on these bands, and violet is the tightest colour — at 0.20 it
+ * left muted text at 4.51:1, one hundredth above the 4.5 floor. 0.16 gives
+ * 4.70:1. Raising these values means re-checking that number.
+ */
+const WASH: Record<SectionId, [string, string]> = {
+  plans: ["--color-brand-300", "--color-mint"],
+  app: ["--color-violet", "--color-brand-300"],
+  features: ["--color-mint", "--color-gold-300"],
+  improve: ["--color-gold-300", "--color-coral"],
+  about: ["--color-coral", "--color-violet"],
+  "why-us": ["--color-brand-300", "--color-gold-300"],
+  curriculum: ["--color-mint", "--color-violet"],
+  faq: ["--color-violet", "--color-brand-300"],
+  contact: ["--color-gold-300", "--color-mint"],
+};
+
+const [washA, washB] = WASH[id];
+---
+
+<section
+  id={id}
+  data-section={id}
+  data-section-label={label}
+  aria-labelledby={`${id}-heading`}
+  class:list={["relative scroll-mt-28", surfaces[surface], spacing[space], className]}
+>
+  {/*
+    Two radial gradients on ONE element, rather than two blurred circles.
+
+    A `blur-3xl` circle is a filter pass over its own compositing layer; at two
+    per band that was eighteen of them on the page, each costing memory and a
+    rasterise. A radial gradient is soft by definition — same look, no filter,
+    no extra layers. The alpha lives in `color-mix` so the 16% contrast ceiling
+    is still expressed directly.
+  */}
+  <div
+    class="pointer-events-none absolute inset-0"
+    style={`background-image:
+      radial-gradient(58% 52% at 6% -6%, color-mix(in srgb, var(${washA}) 16%, transparent), transparent 72%),
+      radial-gradient(54% 56% at 96% 106%, color-mix(in srgb, var(${washB}) 16%, transparent), transparent 72%)`}
+    aria-hidden="true"
+  >
+  </div>
+
+  {
+    textured && (
+      <div
+        class="pointer-events-none absolute inset-0 overflow-hidden opacity-[0.035] [--grid:var(--color-ink-900)] [background-image:linear-gradient(var(--grid)_1px,transparent_1px),linear-gradient(90deg,var(--grid)_1px,transparent_1px)] [background-size:58px_58px] [mask-image:linear-gradient(180deg,transparent,#000_18%,#000_82%,transparent)] dark:opacity-[0.06] dark:[--grid:#ffffff]"
+        aria-hidden="true"
+      />
+    )
+  }
+
+  {/* Content sits above the texture without every caller needing a z-index. */}
+  <div class="relative">
+    <slot />
+  </div>
+</section>

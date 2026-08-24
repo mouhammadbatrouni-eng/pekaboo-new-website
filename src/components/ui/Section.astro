@@ -1,0 +1,33 @@
+---
+interface Props {
+  id?: string;
+  /** Background treatment. `tint` and `deep` create rhythm between sections. */
+  surface?: "plain" | "tint" | "deep";
+  /** Vertical rhythm. `tight` for stacked related sections. */
+  space?: "tight" | "normal" | "loose";
+  class?: string;
+  labelledBy?: string;
+}
+
+const { id, surface = "plain", space = "normal", class: className = "", labelledBy } = Astro.props;
+
+const surfaces = {
+  plain: "",
+  tint: "bg-white/55",
+  deep: "bg-ink-950 text-ink-200",
+};
+
+const spacing = {
+  tight: "py-14 sm:py-16",
+  normal: "py-20 sm:py-28",
+  loose: "py-24 sm:py-36",
+};
+---
+
+<section
+  id={id}
+  aria-labelledby={labelledBy}
+  class:list={["relative scroll-mt-24", surfaces[surface], spacing[space], className]}
+>
+  <slot />
+</section>

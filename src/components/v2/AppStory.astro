@@ -1,0 +1,185 @@
+---
+import Container from "../ui/Container.astro";
+import ScrollSection from "./ScrollSection.astro";
+import SectionIntro from "./SectionIntro.astro";
+import PhoneFrame from "../product/PhoneFrame.astro";
+import PhoneScreenshot from "../product/PhoneScreenshot.astro";
+import CodedAppScreen from "../product/CodedAppScreen.astro";
+import ParentPaymentsScreen from "../product/ParentPaymentsScreen.astro";
+import FeatureIcon from "../ui/FeatureIcon.astro";
+import type { Dict } from "../../lib/i18n";
+import type { AppShot } from "../product/screenshots";
+
+interface Props {
+  t: Dict;
+  rtl: boolean;
+}
+
+const { t, rtl } = Astro.props;
+
+/**
+ * Screens and icons stay in code; the words come from the dictionary.
+ *
+ * Each beat shows the app screen it is actually describing. Payments has no
+ * capture yet, so that one beat still draws its screen in markup — give it a
+ * `shot` as soon as a real one exists.
+ */
+type BeatVisual =
+  | { shot: AppShot; altKey: "appDailyReport" | "appMessages" | "appProgress"; icon: string }
+  | { shot: null; icon: string };
+
+const BEAT_META: BeatVisual[] = [
+  { shot: "dailyReport", altKey: "appDailyReport", icon: "timeline" },
+  { shot: "messages", altKey: "appMessages", icon: "communication" },
+  { shot: "progress", altKey: "appProgress", icon: "curriculum" },
+  { shot: null, icon: "finance" },
+];
+
+const total = t.app.beats.length;
+---
+
+<ScrollSection id="app" label={t.nav.app} space="loose">
+  <Container>
+    <SectionIntro
+      id="app-heading"
+      step="02"
+      eyebrow={t.app.eyebrow}
+      title={t.app.heading}
+      description={t.app.body}
+    />
+
+    <div class="mx-auto mt-16 max-w-4xl" data-app-story>
+      <div class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-20">
+        <div class="space-y-16 lg:space-y-40">
+          {t.app.beats.map((beat, index) => {
+            const visual = BEAT_META[index];
+            return (
+              <div data-app-beat={index} class="scroll-mt-32">
+                <div class="flex items-start gap-4" data-reveal>
+                  <FeatureIcon icon={visual.icon} class="h-11 w-11" />
+                  <div class="min-w-0">
+                    <p class="text-xs font-bold uppercase tracking-[0.12em] text-brand-ink">
+                      {t.app.stepOf(index + 1, total)}
+                    </p>
+                    <h3 class="mt-1 font-heading text-2xl text-body">{beat.title}</h3>
+                    <p class="mt-2.5 max-w-md leading-relaxed text-muted">{beat.body}</p>
+                  </div>
+                </div>
+
+                {/* Mobile: each beat carries its own phone, so the story reads
+                    top-to-bottom without any sticky behaviour. */}
+                <div class="mt-8 flex justify-center lg:hidden">
+                  {visual.shot ? (
+                    <PhoneFrame shot={visual.shot} alt={t.product.shots[visual.altKey]} class="max-w-[236px]" />
+                  ) : (
+                    <PhoneFrame class="max-w-[236px]">
+                      <CodedAppScreen title={beat.title} rtl={rtl}>
+                        <ParentPaymentsScreen />
+                      </CodedAppScreen>
+                    </PhoneFrame>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Desktop: one sticky phone, cross-fading between screens. */}
+        <div class="hidden lg:block">
+          <div class="sticky top-32">
+            {/* One device, every screen stacked inside it. Scrolling past a
+                beat cross-fades to that beat's screen — the frame never moves,
+                only what's on it. */}
+            <PhoneFrame stack>
+              {BEAT_META.map((visual, index) => (
+                <div
+                  data-app-screen={index}
+                  class="absolute inset-0 transition-opacity duration-500 ease-out"
+                  style={index === 0 ? "opacity:1" : "opacity:0"}
+                  aria-hidden={index === 0 ? undefined : "true"}
+                >
+                  {visual.shot ? (
+                    <PhoneScreenshot shot={visual.shot} alt={t.product.shots[visual.altKey]} />
+                  ) : (
+                    <CodedAppScreen title={t.app.beats[index].title} rtl={rtl}>
+                      <ParentPaymentsScreen />
+                    </CodedAppScreen>
+                  )}
+                </div>
+              ))}
+            </PhoneFrame>
+
+            <div class="mt-6 flex justify-center gap-1.5" aria-hidden="true">
+              {BEAT_META.map((_, index) => (
+                <span
+                  data-app-dot={index}
+                  class:list={[
+                    "h-1.5 rounded-full transition-all duration-300",
+                    index === 0 ? "w-6 bg-brand-500" : "w-1.5 bg-line-strong",
+                  ]}
+                ></span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mx-auto mt-20 max-w-2xl rounded-xl border border-line bg-surface p-6 text-center shadow-soft" data-reveal>
+      <p class="text-xs font-bold uppercase tracking-[0.12em] text-brand-ink">{t.app.languagesTitle}</p>
+      <p class="mt-2.5 leading-relaxed text-muted">{t.app.languagesBody}</p>
+      <ul class="mt-4 flex flex-wrap justify-center gap-2">
+        <li class="rounded-full border border-line bg-surface px-3.5 py-1.5 text-sm font-semibold text-body">
+          <span lang="en" dir="ltr">English</span>
+        </li>
+        <li class="rounded-full border border-line bg-surface px-3.5 py-1.5 text-sm font-semibold text-body">
+          <span lang="ar" dir="rtl">العربية</span>
+        </li>
+      </ul>
+    </div>
+  </Container>
+</ScrollSection>
+
+<script>
+  // Swap the sticky phone's screen as each beat passes the reading line.
+  // Purely presentational: every screen is also rendered inline on mobile, so
+  // nothing here is the only route to information.
+  const story = document.querySelector("[data-app-story]");
+  if (story && window.matchMedia("(min-width: 1024px)").matches) {
+    const beats = Array.from(story.querySelectorAll<HTMLElement>("[data-app-beat]"));
+    const screens = Array.from(story.querySelectorAll<HTMLElement>("[data-app-screen]"));
+    const dots = Array.from(story.querySelectorAll<HTMLElement>("[data-app-dot]"));
+    let current = -1;
+
+    function show(index: number) {
+      if (index === current) return;
+      current = index;
+      screens.forEach((screen, i) => {
+        const active = i === index;
+        screen.style.opacity = active ? "1" : "0";
+        if (active) screen.removeAttribute("aria-hidden");
+        else screen.setAttribute("aria-hidden", "true");
+      });
+      dots.forEach((dot, i) => {
+        dot.classList.toggle("w-6", i === index);
+        dot.classList.toggle("bg-brand-500", i === index);
+        dot.classList.toggle("w-1.5", i !== index);
+        dot.classList.toggle("bg-line-strong", i !== index);
+      });
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((entry) => entry.isIntersecting);
+        if (visible.length === 0) return;
+        const best = visible.reduce((a, b) =>
+          Math.abs(a.boundingClientRect.top) < Math.abs(b.boundingClientRect.top) ? a : b,
+        );
+        show(beats.indexOf(best.target as HTMLElement));
+      },
+      { rootMargin: "-35% 0px -45% 0px", threshold: 0 },
+    );
+
+    beats.forEach((beat) => observer.observe(beat));
+  }
+</script>

@@ -1,0 +1,499 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/*
+ * Self-hosted variable fonts, latin subsets only.
+ *
+ * Fontsource's default entrypoint ships Cyrillic, Greek, Vietnamese and (for
+ * Baloo 2) a 116 KB Devanagari subset. Browsers wouldn't download them thanks
+ * to unicode-range, but they'd still be deployed — so we declare just the two
+ * subsets this site renders. `font-display: swap` keeps text visible during
+ * load rather than blocking first paint.
+ */
+@font-face {
+  font-family: "Manrope Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  src: url("@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Manrope Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  src: url("@fontsource-variable/manrope/files/manrope-latin-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308,
+    U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113,
+    U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Baloo 2 Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 800;
+  src: url("@fontsource-variable/baloo-2/files/baloo-2-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Baloo 2 Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 800;
+  src: url("@fontsource-variable/baloo-2/files/baloo-2-latin-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308,
+    U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113,
+    U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* Arabic. The portal uses Noto Sans Arabic for its RTL interface, so the
+   website matches it. Only the Arabic ranges are declared, so English pages
+   never fetch this file. */
+@font-face {
+  font-family: "Noto Sans Arabic Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("@fontsource-variable/noto-sans-arabic/files/noto-sans-arabic-arabic-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0898-08E1, U+08E3-08FF,
+    U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
+}
+
+/*
+ * Peekaboo design tokens — pulled directly from the live portal's source
+ * (peekaboo-web, src/index.css) so the website is provably the same brand,
+ * not a reinterpretation: same hex values, same font pairing (Baloo 2 for
+ * display/headings, Manrope for body), same very-rounded shape language.
+ * Everything downstream reads from these tokens, not hardcoded colors.
+ */
+@theme {
+  --font-sans: "Manrope Variable", "Segoe UI", Arial, sans-serif;
+  --font-heading: "Baloo 2 Variable", "Trebuchet MS", sans-serif;
+
+  /* Sky — primary brand color, matches --primary in the portal */
+  --color-brand-50: #eafbff;
+  --color-brand-100: #d3f5ff;
+  --color-brand-200: #a8ebff;
+  --color-brand-300: #70dbff;
+  --color-brand-400: #3ec4f5;
+  --color-brand-500: #1cb6ea;
+  --color-brand-600: #0f96c7;
+  --color-brand-700: #0e77a1;
+  --color-brand-800: #106083;
+  --color-brand-900: #12506d;
+  --color-brand-950: #0a3547;
+
+  /* Gold — secondary brand color, matches --secondary in the portal */
+  --color-gold-50: #fffbeb;
+  --color-gold-100: #fff3c4;
+  --color-gold-200: #ffe58a;
+  --color-gold-300: #ffd55f;
+  --color-gold-400: #ffc945;
+  --color-gold-500: #ffae13;
+  --color-gold-600: #e6910a;
+  --color-gold-700: #b8720a;
+
+  /* Ink — near-black navy text color, matches --foreground in the portal */
+  --color-ink-50: #f5f6f9;
+  --color-ink-100: #e8eaf0;
+  --color-ink-200: #ccd0dc;
+  --color-ink-300: #a4aabf;
+  /* Darkened from the portal's #767e9c to clear 4.5:1 on the cream background —
+     this token is used for body-size secondary text, so it must pass AA. */
+  --color-ink-400: #69718c;
+  --color-ink-500: #5d667f;
+  --color-ink-600: #454e6b;
+  --color-ink-700: #313a56;
+  --color-ink-800: #232c46;
+  --color-ink-900: #172036;
+  --color-ink-950: #101828;
+
+  /* Additional accent colors from the portal's chart/chip palette */
+  --color-coral: #ff7d66;
+  --color-coral-soft: #ffe4de;
+  --color-mint: #72ddb1;
+  --color-mint-soft: #dcf9ec;
+  --color-violet: #8f7bff;
+  --color-violet-soft: #ece8ff;
+
+  /* Semantic status colors.
+     These values are tuned for TEXT on the site's light surfaces and all clear
+     4.5:1 against both white and their own soft background. The portal previews
+     render on near-black, so they use the `-onDark` variants below instead —
+     the light-surface values would be unreadable there. */
+  --color-success: #15734c;
+  --color-success-soft: #d9f5e8;
+  --color-warning: #8f5708;
+  --color-warning-soft: #fff3c4;
+  --color-danger: #c2332b;
+  --color-danger-soft: #ffe2e0;
+
+  /* Status colors for use on the dark portal/app surfaces. */
+  --color-success-onDark: #72ddb1;
+  --color-warning-onDark: #ffd55f;
+  --color-danger-onDark: #ff8b84;
+
+  /*
+   * Semantic surface and text tokens.
+   *
+   * These are the only colors that change between light and dark mode — the
+   * scales above stay fixed, so anything deliberately dark in both themes
+   * (portal previews, the footer, CTA banners) keeps its exact appearance.
+   * Values here are the light theme; the `.dark` block below overrides them
+   * with the portal's own dark palette.
+   */
+  --color-canvas: #fffaf5;
+  --color-surface: #ffffff;
+  --color-surface-2: rgba(255, 255, 255, 0.55);
+  --color-line: #e8eaf0;
+  --color-line-strong: #ccd0dc;
+  --color-text: #172036;
+  --color-text-muted: #5d667f;
+  --color-text-subtle: #69718c;
+  /* Accent colors for text/icons on the current surface — these brighten in
+     dark mode, unlike the fixed accent values used for fills. */
+  --color-brand-ink: #0e77a1;
+  --color-coral-ink: #c2513c;
+  --color-violet-ink: #6250c9;
+
+  /* Radius scale — same formula as the portal (base 1.45rem), so "rounded-xl"
+     etc. feel exactly as playful/round here as they do in the product. */
+  --radius-sm: 0.9rem;
+  --radius-md: 1.19rem;
+  --radius-lg: 1.45rem;
+  --radius-xl: 1.91rem;
+  --radius-2xl: 2.49rem;
+
+  --shadow-soft: 0 10px 24px rgba(25, 31, 56, 0.07);
+  --shadow-soft-lg: 0 24px 48px -16px rgba(25, 31, 56, 0.18);
+  --shadow-glow-brand: 0 18px 30px rgba(28, 182, 234, 0.26);
+  --shadow-glow-gold: 0 18px 30px rgba(255, 174, 19, 0.24);
+
+  --animate-fade-up: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/*
+ * Dark theme.
+ *
+ * Values are taken from the Peekaboo portal's own `.dark` block, so switching
+ * the website to dark gives the same deep navy and warm off-white the product
+ * uses — the toggle in the portal sidebar and the one here land on the same
+ * colours. Applied via a `.dark` class on <html> (see the theme script), not
+ * a media query, so the visitor's choice wins over the OS setting.
+ */
+@custom-variant dark (&:is(.dark *));
+
+.dark {
+  color-scheme: dark;
+
+  --color-canvas: #12192c;
+  --color-surface: #1a2338;
+  --color-surface-2: rgba(255, 255, 255, 0.03);
+  --color-line: rgba(255, 255, 255, 0.09);
+  --color-line-strong: rgba(255, 255, 255, 0.16);
+  --color-text: #f8f3ea;
+  --color-text-muted: #c2ccdd;
+  --color-text-subtle: #a4aabf;
+  --color-brand-ink: #33c1f2;
+  --color-coral-ink: #ff9c88;
+  --color-violet-ink: #b3a4ff;
+
+  /* Status colours flip to their on-dark variants, since every surface is
+     now dark. */
+  --color-success: #72ddb1;
+  --color-success-soft: rgba(114, 221, 177, 0.14);
+  --color-warning: #ffd55f;
+  --color-warning-soft: rgba(255, 213, 95, 0.14);
+  --color-danger: #ff8b84;
+  --color-danger-soft: rgba(255, 139, 132, 0.14);
+
+  /* Soft accent tints need to be translucent rather than pale in dark mode. */
+  --color-coral-soft: rgba(255, 125, 102, 0.16);
+  --color-mint-soft: rgba(114, 221, 177, 0.14);
+  --color-violet-soft: rgba(143, 123, 255, 0.18);
+  --color-brand-50: rgba(51, 193, 242, 0.12);
+  --color-brand-100: rgba(51, 193, 242, 0.2);
+  --color-gold-100: rgba(255, 213, 95, 0.16);
+  --color-gold-700: #ffd55f;
+
+  --shadow-soft: 0 10px 24px rgba(0, 0, 0, 0.28);
+  --shadow-soft-lg: 0 24px 48px -16px rgba(0, 0, 0, 0.45);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans antialiased;
+    color: var(--color-text-muted);
+    background:
+      radial-gradient(circle at top left, rgba(255, 125, 102, 0.12), transparent 28%),
+      radial-gradient(circle at 82% 14%, rgba(28, 182, 234, 0.12), transparent 24%),
+      radial-gradient(circle at 10% 90%, rgba(114, 221, 177, 0.12), transparent 22%),
+      linear-gradient(180deg, #fffaf5 0%, #fff3e8 60%, #fffdfb 100%);
+  }
+
+  .dark body {
+    background:
+      radial-gradient(circle at top left, rgba(255, 125, 102, 0.07), transparent 28%),
+      radial-gradient(circle at 82% 14%, rgba(51, 193, 242, 0.09), transparent 24%),
+      radial-gradient(circle at 10% 90%, rgba(114, 221, 177, 0.06), transparent 22%),
+      linear-gradient(180deg, #12192c 0%, #18213a 60%, #12192c 100%);
+  }
+
+  ::selection {
+    @apply bg-brand-200 text-ink-900;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-500;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-bold;
+    color: var(--color-text);
+    font-family: var(--font-heading);
+    letter-spacing: -0.03em;
+  }
+
+  /*
+   * Arabic / RTL.
+   *
+   * Baloo 2 has no Arabic coverage, so headings fall back to Noto Sans Arabic
+   * rather than rendering in a mismatched system font. The tight negative
+   * letter-spacing that suits the Latin display face would damage Arabic
+   * letterforms and joins, so it's reset to normal.
+   */
+  /* Scoped to html[dir=rtl] — the Arabic page — rather than any RTL element.
+     Isolated Arabic spans on the English page (the language chips) fall back
+     to the system Arabic face instead of pulling a 164 KB webfont for a
+     handful of characters. */
+  html[dir="rtl"] {
+    font-family: "Noto Sans Arabic Variable", "Segoe UI", Tahoma, sans-serif;
+  }
+
+  html[dir="rtl"] h1,
+  html[dir="rtl"] h2,
+  html[dir="rtl"] h3,
+  html[dir="rtl"] h4 {
+    font-family: "Noto Sans Arabic Variable", "Segoe UI", Tahoma, sans-serif;
+    letter-spacing: normal;
+  }
+
+  /* Arabic script needs a little more vertical room to breathe. */
+  html[dir="rtl"] p,
+  html[dir="rtl"] li {
+    line-height: 1.85;
+  }
+
+  /* Latin runs inside Arabic text (brand names, the phone number) keep their
+     own direction so they don't reorder. */
+  [dir="rtl"] .ltr-inline {
+    direction: ltr;
+    display: inline-block;
+    unicode-bidi: isolate;
+  }
+}
+
+/*
+ * Theme-aware utilities.
+ *
+ * Components in the single-page concept use these instead of `bg-white` /
+ * `text-ink-900`, so a single `.dark` class flips the whole page. Anything
+ * that should stay dark in both themes keeps using the fixed ink scale.
+ */
+@utility bg-canvas {
+  background-color: var(--color-canvas);
+}
+@utility bg-surface {
+  background-color: var(--color-surface);
+}
+@utility bg-surface-2 {
+  background-color: var(--color-surface-2);
+}
+@utility border-line {
+  border-color: var(--color-line);
+}
+@utility text-body {
+  color: var(--color-text);
+}
+@utility text-muted {
+  color: var(--color-text-muted);
+}
+@utility text-subtle {
+  color: var(--color-text-subtle);
+}
+@utility text-brand-ink {
+  color: var(--color-brand-ink);
+}
+@utility text-coral-ink {
+  color: var(--color-coral-ink);
+}
+@utility text-violet-ink {
+  color: var(--color-violet-ink);
+}
+
+/*
+ * Glow border.
+ *
+ * A light travelling around a card's edge. Built as a masked conic gradient
+ * rather than an animated `border-image` or a stack of box-shadows: the mask
+ * punches out the middle so only a hairline ring paints, which keeps it on the
+ * compositor and lets it follow whatever `border-radius` the card already has.
+ *
+ * Two colours per card, set with `--glow-a` / `--glow-b`, so sections can run
+ * the brand's warmer accents (coral, mint, violet, gold) instead of the cyan
+ * everything else uses.
+ */
+@property --glow-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@utility glow-card {
+  position: relative;
+
+  --glow-a: var(--color-brand-400);
+  --glow-b: var(--color-gold-400);
+
+  &::before {
+    content: "";
+    position: absolute;
+    /* Sits just outside the border box. Deliberately NOT `z-index: -1`, which
+       would bury the ring behind the card's own opaque background — it paints
+       above, but it is only ever a hairline at the perimeter, so it never
+       covers content. */
+    inset: -2px;
+    pointer-events: none;
+    border-radius: inherit;
+    padding: 2px;
+    background: conic-gradient(
+      from var(--glow-angle),
+      transparent 0%,
+      var(--glow-a) 10%,
+      var(--glow-b) 22%,
+      transparent 38%
+    );
+    /* Punch the fill out so only the ring survives. `exclude` is the standard
+       property; the -webkit- pair is still needed for Safari. */
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    /*
+     * A hairline is a line, not a glow. drop-shadow blooms the ring itself,
+     * which is the only way to get light *spilling* off the edge without a
+     * second blurred layer — one of those would either hide behind the card's
+     * opaque background or wash over its content, depending on whether the
+     * card happens to be creating a stacking context at the time.
+     *
+     * ONE shadow, not two. Each is a separate blur pass over the element, and
+     * these are the most expensive thing on the card.
+     */
+    filter: drop-shadow(0 0 7px var(--glow-a));
+
+    opacity: 0.75;
+    transition: opacity 0.45s ease;
+  }
+
+  /*
+   * The ring only travels on hover.
+   *
+   * Animating `--glow-angle` regenerates the conic gradient and re-runs the
+   * drop-shadow blur on EVERY frame — it cannot be composited, because the
+   * pixels genuinely change. Nine of those looping forever, on- and off-screen,
+   * is what made the page feel heavy. At rest the gradient is painted once and
+   * cached; it still reads as a colour-shifted edge, it just holds still.
+   */
+  &:hover::before {
+    opacity: 1;
+    animation: glow-spin 6s linear infinite;
+  }
+}
+
+@keyframes glow-spin {
+  to {
+    --glow-angle: 360deg;
+  }
+}
+
+/*
+ * Where `@property` is unsupported the angle cannot animate, so the ring would
+ * sit frozen at one rotation. That still looks deliberate — a static gradient
+ * edge — so no fallback is needed beyond letting it be.
+ *
+ * Under reduced motion, stop the travel but keep the colour.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .glow-card::before {
+    animation: none;
+  }
+}
+
+/*
+ * Scroll reveal.
+ *
+ * Elements start hidden ONLY once the script confirms it can observe them
+ * (it sets `data-reveal-ready` on <html>). Without JS, or before the script
+ * runs, everything is visible — content is never dependent on animation.
+ */
+[data-reveal-ready] [data-reveal] {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-reveal-ready] [data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  /* Reveal animations are motion, not information — drop them entirely. */
+  [data-reveal-ready] [data-reveal],
+  [data-reveal-ready] [data-reveal].is-revealed {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

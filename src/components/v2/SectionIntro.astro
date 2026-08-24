@@ -1,0 +1,114 @@
+---
+import AccentHeading from "../ui/AccentHeading.astro";
+import { splitAccent } from "../../lib/accent";
+
+interface Props {
+  id: string;
+  /** The step number in the journey, e.g. "01". */
+  step?: string;
+  eyebrow: string;
+  title: string;
+  description?: string;
+  align?: "left" | "center";
+  tone?: "dark" | "light";
+  class?: string;
+}
+
+const {
+  id,
+  step,
+  eyebrow,
+  title,
+  description,
+  align = "center",
+  tone = "dark",
+  class: className = "",
+} = Astro.props;
+
+const titleClass = tone === "light" ? "text-white" : "text-body";
+const bodyClass = tone === "light" ? "text-ink-300" : "text-muted";
+const eyebrowClass = tone === "light" ? "text-brand-300" : "text-brand-ink";
+/* `brand-ink` flips with the theme; on a fixed-dark surface it would not, so
+   the light tone pins the accent to a ramp value that holds against ink-950. */
+const accentClass = tone === "light" ? "text-brand-300" : "text-brand-ink";
+const stepClass =
+  tone === "light" ? "border-white/15 text-subtle" : "border-line text-subtle";
+
+/*
+ * The section rule is the counterpart to the heading's brush stroke: most
+ * headings here are a single phrase, so they never split and would otherwise
+ * carry no brand mark at all. Where a heading *does* split, it already has a
+ * stroke underneath it and a rule as well would just read as clutter.
+ */
+const showRule = !splitAccent(title).hasAccent;
+---
+
+<div
+  class:list={["max-w-2xl", align === "center" ? "mx-auto text-center" : "", className]}
+  data-reveal
+>
+  <p class:list={["mb-3 flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.14em]", align === "center" && "justify-center", eyebrowClass]}>
+    {step && (
+      <span class:list={["rounded-full border px-2 py-0.5 tabular-nums", stepClass]} aria-hidden="true">
+        {step}
+      </span>
+    )}
+    {eyebrow}
+  </p>
+  <AccentHeading
+    as="h2"
+    id={id}
+    text={title}
+    class={`text-3xl sm:text-4xl ${titleClass}`}
+    accentClass={accentClass}
+  />
+  {
+    showRule && (
+      <div
+        class:list={["section-rule mt-5 h-1 w-16 rounded-full", align === "center" && "mx-auto"]}
+        aria-hidden="true"
+      />
+    )
+  }
+  {description && <p class:list={["mt-4 text-lg leading-relaxed", bodyClass]}>{description}</p>}
+</div>
+
+<style>
+  /*
+   * Same brand→gold ramp as the heading stroke, so the two treatments read as
+   * one system. Written in CSS rather than a `bg-gradient-to-r` utility so RTL
+   * can mirror it — Tailwind's gradient directions are physical.
+   */
+  .section-rule {
+    background-image: linear-gradient(90deg, var(--color-brand-400), var(--color-gold-400));
+  }
+
+  :global([dir="rtl"]) .section-rule {
+    background-image: linear-gradient(270deg, var(--color-brand-400), var(--color-gold-400));
+  }
+
+  /*
+   * The rule wipes in with its heading, reusing the existing reveal hooks.
+   * Gated on `data-reveal-ready` so it is simply present without JS.
+   */
+  :global([data-reveal-ready]) .section-rule {
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+  }
+
+  :global([dir="rtl"][data-reveal-ready]) .section-rule {
+    transform-origin: right center;
+  }
+
+  :global([data-reveal-ready] [data-reveal].is-revealed) .section-rule {
+    transform: scaleX(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global([data-reveal-ready]) .section-rule {
+      transform: none;
+      transition: none;
+    }
+  }
+</style>

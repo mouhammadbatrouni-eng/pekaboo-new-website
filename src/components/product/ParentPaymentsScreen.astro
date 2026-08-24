@@ -1,0 +1,35 @@
+---
+import { Check } from "@lucide/astro";
+
+/**
+ * The invoices list in Peekaboo Parent, drawn in markup.
+ *
+ * The last app screen on the site not backed by a real capture — every other
+ * one is a screenshot from the product. Replace this the moment a payments
+ * capture exists, and delete the file along with CodedAppScreen.
+ */
+---
+
+<div class="space-y-2.5 px-4 pt-1">
+  <div class="rounded-xl bg-ink-950 p-3 text-center">
+    <p class="text-[9px] font-bold uppercase tracking-wide text-ink-400">Balance due</p>
+    <p class="mt-0.5 font-heading text-2xl text-white">AED 950</p>
+    <p class="text-[9px] text-ink-400">Due 30 August</p>
+  </div>
+  {[
+    { ref: "INV-1042", note: "August fees", state: "Due", tone: "bg-gold-100 text-gold-700" },
+    { ref: "INV-1031", note: "July fees", state: "Paid", tone: "bg-mint-soft text-success" },
+    { ref: "INV-1020", note: "June fees", state: "Paid", tone: "bg-mint-soft text-success" },
+  ].map((row) => (
+    <div class="flex items-center justify-between rounded-xl border border-ink-100 bg-white px-3 py-2">
+      <div class="min-w-0">
+        <p class="truncate text-[11px] font-bold text-ink-800">{row.ref}</p>
+        <p class="text-[9px] text-ink-400">{row.note}</p>
+      </div>
+      <span class:list={["shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold", row.tone]}>
+        {row.state === "Paid" && <Check size={9} stroke-width={4} class="mr-0.5 inline" aria-hidden="true" />}
+        {row.state}
+      </span>
+    </div>
+  ))}
+</div>

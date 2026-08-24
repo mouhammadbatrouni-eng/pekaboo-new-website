@@ -1,0 +1,117 @@
+---
+import Logo from "../ui/Logo.astro";
+import Container from "../ui/Container.astro";
+import Button from "../ui/Button.astro";
+import { ArrowUp, MapPin, Phone, ChevronRight, ChevronLeft } from "@lucide/astro";
+import { SITE } from "../../lib/content/site";
+import { routePath, sectionHref, type Dict, type Lang } from "../../lib/i18n";
+
+interface Props {
+  t: Dict;
+  rtl: boolean;
+  lang: Lang;
+  /** Section links become absolute when the footer is on a legal page. */
+  isHome?: boolean;
+}
+
+const { t, rtl, lang, isHome = false } = Astro.props;
+const privacyHref = routePath("privacy", lang);
+const termsHref = routePath("terms", lang);
+const contactHref = sectionHref("contact", lang, isHome);
+const Chevron = rtl ? ChevronLeft : ChevronRight;
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-line bg-ink-950 text-ink-300">
+  <Container class="py-14">
+    <div class="grid gap-12 lg:grid-cols-[1.2fr_1fr_1.1fr]">
+      {/* Brand */}
+      <div>
+        <Logo tone="light" />
+        <p class="mt-5 max-w-sm leading-relaxed text-ink-400">{t.footer.description}</p>
+        <a
+          href={SITE.whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-6 inline-flex items-center rounded-full border border-white/10 px-4 py-2 text-xs font-semibold text-ink-300 transition-colors hover:border-brand-400 hover:text-brand-300"
+        >
+          WhatsApp
+        </a>
+      </div>
+
+      {/* Useful links */}
+      <nav aria-label={t.footer.usefulLinks}>
+        <h2 class="text-sm font-bold uppercase tracking-[0.12em] text-white">{t.footer.usefulLinks}</h2>
+        <ul class="mt-5 space-y-2.5">
+          {t.footer.links.map((link) => (
+            <li>
+              <a
+                href={sectionHref(link.href.replace("#", ""), lang, isHome)}
+                class="group inline-flex items-center gap-1.5 text-sm text-ink-400 transition-colors hover:text-white"
+              >
+                <Chevron size={13} class="text-brand-400" aria-hidden="true" />
+                {link.label}
+              </a>
+            </li>
+          ))}
+          <li>
+            <a
+              href={privacyHref}
+              class="group inline-flex items-center gap-1.5 text-sm text-ink-400 transition-colors hover:text-white"
+            >
+              <Chevron size={13} class="text-brand-400" aria-hidden="true" />
+              {t.footer.legal.privacy}
+            </a>
+          </li>
+          <li>
+            <a
+              href={termsHref}
+              class="group inline-flex items-center gap-1.5 text-sm text-ink-400 transition-colors hover:text-white"
+            >
+              <Chevron size={13} class="text-brand-400" aria-hidden="true" />
+              {t.footer.legal.terms}
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      {/* Contact card */}
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+        <h2 class="text-sm font-bold uppercase tracking-[0.12em] text-white">{t.footer.contactHeading}</h2>
+
+        <address class="mt-5 space-y-4 not-italic text-sm">
+          <div class="flex items-start gap-3">
+            <MapPin size={16} class="mt-0.5 shrink-0 text-brand-400" aria-hidden="true" />
+            <span class="leading-relaxed text-ink-300">
+              {SITE.address.map((line) => <span class="block">{line}</span>)}
+            </span>
+          </div>
+          <div class="flex items-center gap-3">
+            <Phone size={16} class="shrink-0 text-brand-400" aria-hidden="true" />
+            <span class="text-ink-300">
+              <span class="sr-only">{t.footer.phoneLabel}: </span>
+              <a href={SITE.phoneHref} class="ltr-inline transition-colors hover:text-white" dir="ltr">
+                {SITE.phone}
+              </a>
+            </span>
+          </div>
+        </address>
+
+        <div class="mt-6">
+          <Button href={contactHref} class="w-full">{t.common.contactUs}</Button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 flex flex-col gap-4 border-t border-white/8 pt-7 text-xs text-ink-500 sm:flex-row sm:items-center sm:justify-between">
+      <p>&copy; {year} Peekaboo. {t.footer.rights} {t.footer.builtBy}</p>
+      <a
+        href={isHome ? "#top" : routePath("home", lang)}
+        class="inline-flex items-center gap-1.5 font-semibold text-ink-400 transition-colors hover:text-white"
+      >
+        {t.common.backToTop}
+        <ArrowUp size={13} aria-hidden="true" />
+      </a>
+    </div>
+  </Container>
+</footer>

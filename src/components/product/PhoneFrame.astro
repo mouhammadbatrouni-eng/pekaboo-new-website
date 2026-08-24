@@ -1,0 +1,51 @@
+---
+import PhoneScreenshot from "./PhoneScreenshot.astro";
+import type { AppShot } from "./screenshots";
+
+/**
+ * A phone bezel holding a real capture of the Peekaboo Parent app.
+ *
+ * The screen area is locked to the app's own 402×874 viewport, so a capture is
+ * never stretched — it fills the frame exactly at whatever width the layout
+ * gives us. Captures already carry the app's header and tab bar, so this
+ * component adds no chrome of its own beyond the device.
+ *
+ * Pass `shot` for a capture, or use the slot for the few screens still drawn
+ * in markup (see CodedAppScreen).
+ */
+interface Props {
+  shot?: AppShot;
+  /** Describes the screen for people who can't see it. Required with `shot`. */
+  alt?: string;
+  class?: string;
+  /** Above-the-fold frames should not lazy-load. */
+  eager?: boolean;
+  /** Layered frames need the screen itself to establish a stacking context. */
+  stack?: boolean;
+}
+
+const { shot, alt = "", class: className = "", eager = false, stack = false } = Astro.props;
+---
+
+<div
+  class:list={[
+    "w-full max-w-[268px] rounded-[2.25rem] border-[7px] border-ink-900 bg-ink-900 shadow-soft-lg",
+    className,
+  ]}
+>
+  <div
+    class:list={[
+      "relative aspect-[402/874] overflow-hidden rounded-[1.7rem] bg-white",
+      stack && "isolate",
+    ]}
+  >
+    {shot ? <PhoneScreenshot shot={shot} alt={alt} eager={eager} /> : <slot />}
+
+    {/* A hairline inside the bezel keeps light captures from bleeding into it. */}
+    <div
+      class="pointer-events-none absolute inset-0 rounded-[1.7rem] ring-1 ring-inset ring-ink-900/10"
+      aria-hidden="true"
+    >
+    </div>
+  </div>
+</div>

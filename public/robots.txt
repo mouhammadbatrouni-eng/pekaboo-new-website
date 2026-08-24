@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://peek-a-boo.app/sitemap-index.xml

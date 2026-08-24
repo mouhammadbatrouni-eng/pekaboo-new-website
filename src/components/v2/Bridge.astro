@@ -1,0 +1,27 @@
+---
+import Container from "../ui/Container.astro";
+
+/**
+ * A short connective line between sections. Keeps the page reading as one
+ * continuous story instead of unrelated blocks, and tells the visitor what
+ * they're about to see.
+ */
+interface Props {
+  text: string;
+  tone?: "dark" | "light";
+}
+
+const { text, tone = "dark" } = Astro.props;
+const textClass = tone === "light" ? "text-ink-300" : "text-muted";
+const lineClass = tone === "light" ? "via-white/20" : "via-line-strong";
+---
+
+<div class="py-4 sm:py-8">
+  <Container class="max-w-2xl text-center">
+    <div class:list={["mx-auto h-10 w-px bg-gradient-to-b from-transparent", lineClass]} aria-hidden="true"></div>
+    <p class:list={["mt-6 text-lg leading-relaxed sm:text-xl", textClass]} data-reveal>
+      {text}
+    </p>
+    <div class:list={["mx-auto mt-6 h-10 w-px bg-gradient-to-b to-transparent", lineClass]} aria-hidden="true"></div>
+  </Container>
+</div>

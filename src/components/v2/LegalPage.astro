@@ -1,0 +1,49 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import StickyNav from "./StickyNav.astro";
+import Footer from "./Footer.astro";
+import LegalDocument from "./LegalDocument.astro";
+import { getDict, alternatesFor, type Lang, type RouteKey } from "../../lib/i18n";
+import { getSiteSettings } from "../../lib/sanity/queries";
+import { resolveSeo } from "../../lib/seo";
+import type { LegalDoc } from "../../lib/legal/types";
+
+/**
+ * Header → document → footer. Deliberately contains none of the homepage's
+ * marketing sections, and no V1 chrome — it shares the exact header and
+ * footer used by the single-page site.
+ */
+interface Props {
+  lang: Lang;
+  routeKey: RouteKey;
+  doc: LegalDoc;
+}
+
+const { lang, routeKey, doc } = Astro.props;
+const t = getDict(lang);
+const rtl = t.meta.dir === "rtl";
+
+const site = await getSiteSettings();
+const seo = resolveSeo(doc.title, { metaTitle: `${doc.title} — Peekaboo`, metaDescription: doc.lastUpdated }, site);
+---
+
+<BaseLayout
+  seo={seo}
+  enableTheme
+  lang={lang}
+  dir={t.meta.dir}
+  alternates={alternatesFor(routeKey)}
+  skipLabel={t.common.skipToContent}
+>
+  <StickyNav t={t} lang={lang} routeKey={routeKey} />
+
+  <main id="main-content">
+    {/* Capped well below the header's full width — legal text should never
+        stretch across a wide desktop. */}
+    <div class="mx-auto w-full max-w-[900px] px-[clamp(1.25rem,3vw,2rem)] py-16 sm:py-24">
+      <LegalDocument doc={doc} />
+    </div>
+  </main>
+
+  <Footer t={t} rtl={rtl} lang={lang} />
+</BaseLayout>

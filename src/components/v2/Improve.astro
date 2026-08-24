@@ -1,0 +1,78 @@
+---
+import Container from "../ui/Container.astro";
+import ScrollSection from "./ScrollSection.astro";
+import SectionIntro from "./SectionIntro.astro";
+import Logo3D from "../ui/Logo3D.astro";
+import { ArrowRight, ArrowLeft } from "@lucide/astro";
+import type { Dict } from "../../lib/i18n";
+
+interface Props {
+  t: Dict;
+  rtl: boolean;
+}
+
+const { t, rtl } = Astro.props;
+const Arrow = rtl ? ArrowLeft : ArrowRight;
+---
+
+<ScrollSection id="improve" label={t.nav.improve}>
+  <Container>
+    <SectionIntro
+      id="improve-heading"
+      step="04"
+      eyebrow={t.improve.eyebrow}
+      title={t.improve.heading}
+      description={t.improve.body}
+    />
+
+    <div class="mx-auto mt-14 max-w-3xl">
+      {/* Column labels, shown once rather than repeated per row. */}
+      <div class="mb-4 hidden grid-cols-[1fr_auto_1fr] items-center gap-4 px-1 sm:grid">
+        <p class="text-xs font-bold uppercase tracking-[0.12em] text-subtle">{t.improve.before}</p>
+        <span class="w-8" aria-hidden="true"></span>
+        <p class="text-xs font-bold uppercase tracking-[0.12em] text-brand-ink">{t.improve.after}</p>
+      </div>
+
+      <ul class="space-y-3">
+        {t.improve.pairs.map((pair, index) => (
+          <li
+            data-reveal
+            data-reveal-delay={index * 70}
+            class="grid grid-cols-[1fr_auto_1fr] items-center gap-3 rounded-xl border border-line bg-surface p-4 shadow-soft sm:gap-4 sm:p-5"
+          >
+            <span class="text-sm text-subtle line-through decoration-line-strong sm:text-base">
+              {pair.before}
+            </span>
+            <span
+              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-ink"
+              aria-hidden="true"
+            >
+              <Arrow size={15} stroke-width={2.5} />
+            </span>
+            <span class="text-sm font-bold text-body sm:text-base">{pair.after}</span>
+          </li>
+        ))}
+      </ul>
+
+      {/* The convergence: everything above resolves into one platform. */}
+      <div class="mt-10 flex flex-col items-center" data-reveal>
+        <div class="h-10 w-px bg-gradient-to-b from-line-strong to-brand-400" aria-hidden="true"></div>
+        {/* The mark rises out of the card as this section scrolls up — the
+            visual payoff of the convergence above it. `data-logo3d-zone`
+            makes the whole card the pointer surface, so the tilt tracks the
+            cursor from anywhere on it rather than only directly over the
+            76px mark. */}
+        <div
+          class="flex items-center gap-4 rounded-xl border border-brand-200 bg-surface px-6 py-5 shadow-soft-lg"
+          data-logo3d-zone
+        >
+          <Logo3D size={76} />
+          <div>
+            <p class="font-heading text-lg text-body">{t.improve.onePlatform}</p>
+            <p class="text-sm text-muted">{t.improve.onePlatformBody}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Container>
+</ScrollSection>

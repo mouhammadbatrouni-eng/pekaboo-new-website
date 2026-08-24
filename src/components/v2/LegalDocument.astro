@@ -1,0 +1,107 @@
+---
+import type { LegalDoc } from "../../lib/legal/types";
+
+/**
+ * Renders a legal document as a plain, scrollable article — no cards, tabs,
+ * accordions or reveal animation. Long legal text is hard enough to read
+ * without the design getting in the way.
+ */
+interface Props {
+  doc: LegalDoc;
+}
+
+const { doc } = Astro.props;
+---
+
+<article class="legal-doc">
+  <header class="mb-10 border-b border-line pb-8 sm:mb-14 sm:pb-10">
+    <h1 class="text-4xl sm:text-5xl">{doc.title}</h1>
+    <p class="mt-4 text-sm font-semibold text-subtle">{doc.lastUpdated}</p>
+  </header>
+
+  {doc.intro && doc.intro.length > 0 && (
+    <div class="mb-10 sm:mb-12">
+      {doc.intro.map((block) => (
+        <>
+          {block.type === "p" && <p>{block.text}</p>}
+          {block.type === "h3" && <h3>{block.text}</h3>}
+          {block.type === "ul" && <ul>{block.items.map((i) => <li>{i}</li>)}</ul>}
+          {block.type === "ol" && <ol>{block.items.map((i) => <li>{i}</li>)}</ol>}
+        </>
+      ))}
+    </div>
+  )}
+
+  {doc.sections.map((section) => (
+    <section class="mb-10 sm:mb-12">
+      {section.heading && <h2>{section.heading}</h2>}
+      {section.blocks.map((block) => (
+        <>
+          {block.type === "p" && <p>{block.text}</p>}
+          {block.type === "h3" && <h3>{block.text}</h3>}
+          {block.type === "ul" && <ul>{block.items.map((i) => <li>{i}</li>)}</ul>}
+          {block.type === "ol" && <ol>{block.items.map((i) => <li>{i}</li>)}</ol>}
+        </>
+      ))}
+    </section>
+  ))}
+</article>
+
+<style>
+  /* Typography tuned for sustained reading rather than scanning. */
+  .legal-doc {
+    font-size: 1.0625rem; /* 17px */
+    line-height: 1.75;
+    color: var(--color-text-muted);
+  }
+
+  .legal-doc h2 {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    line-height: 1.3;
+    color: var(--color-text);
+  }
+
+  .legal-doc h3 {
+    margin-top: 1.75rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.125rem;
+    color: var(--color-text);
+  }
+
+  .legal-doc p {
+    margin-bottom: 1.15rem;
+  }
+
+  .legal-doc p:last-child {
+    margin-bottom: 0;
+  }
+
+  .legal-doc ul,
+  .legal-doc ol {
+    margin-bottom: 1.15rem;
+    padding-inline-start: 1.5rem;
+  }
+
+  .legal-doc ul {
+    list-style: disc;
+  }
+
+  .legal-doc ol {
+    list-style: decimal;
+  }
+
+  .legal-doc li {
+    margin-bottom: 0.6rem;
+    padding-inline-start: 0.25rem;
+  }
+
+  .legal-doc li::marker {
+    color: var(--color-brand-ink);
+  }
+
+  /* Arabic needs a little more room between lines and after list markers. */
+  :global(html[dir="rtl"]) .legal-doc {
+    line-height: 1.95;
+  }
+</style>

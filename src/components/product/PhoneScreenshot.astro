@@ -1,0 +1,27 @@
+---
+import { Image } from "astro:assets";
+import { APP_SHOTS, type AppShot } from "./screenshots";
+
+/**
+ * A single app capture, filling whatever box it's placed in — no frame.
+ *
+ * Used on its own when several screens are stacked inside one PhoneFrame and
+ * cross-faded; PhoneFrame renders it for the simple single-screen case.
+ */
+interface Props {
+  shot: AppShot;
+  alt: string;
+  eager?: boolean;
+}
+
+const { shot, alt, eager = false } = Astro.props;
+---
+
+<Image
+  src={APP_SHOTS[shot]}
+  alt={alt}
+  class="h-full w-full object-cover object-top"
+  quality={82}
+  loading={eager ? "eager" : "lazy"}
+  decoding={eager ? "sync" : "async"}
+/>

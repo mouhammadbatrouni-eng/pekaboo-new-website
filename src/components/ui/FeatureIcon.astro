@@ -1,0 +1,48 @@
+---
+import {
+  CalendarCheck,
+  Camera,
+  Wallet,
+  MessageCircle,
+  BookOpen,
+  Users,
+  ShieldCheck,
+  Calendar,
+} from "@lucide/astro";
+
+const ICONS = {
+  attendance: CalendarCheck,
+  timeline: Camera,
+  finance: Wallet,
+  communication: MessageCircle,
+  curriculum: BookOpen,
+  people: Users,
+  security: ShieldCheck,
+  calendar: Calendar,
+} as const;
+
+type Tone = "brand" | "gold" | "mint" | "coral" | "violet";
+
+interface Props {
+  icon: keyof typeof ICONS | string;
+  tone?: Tone;
+  class?: string;
+}
+
+const { icon, tone = "brand", class: className = "" } = Astro.props;
+const IconComponent = ICONS[icon as keyof typeof ICONS] ?? Users;
+
+// Both the tint and the icon colour are theme-aware tokens, so these chips
+// stay legible when the page flips to the dark theme.
+const tones: Record<Tone, string> = {
+  brand: "bg-brand-50 text-brand-ink",
+  gold: "bg-gold-100 text-gold-700",
+  mint: "bg-mint-soft text-success",
+  coral: "bg-coral-soft text-coral-ink",
+  violet: "bg-violet-soft text-violet-ink",
+};
+---
+
+<span class:list={["inline-flex shrink-0 items-center justify-center rounded-xl", tones[tone], className]}>
+  <IconComponent size={20} stroke-width={2} aria-hidden="true" />
+</span>

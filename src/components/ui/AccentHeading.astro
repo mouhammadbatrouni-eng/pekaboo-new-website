@@ -1,0 +1,122 @@
+---
+import { splitAccent } from "../../lib/accent";
+
+/**
+ * A heading whose closing sentence carries the brand accent and a gradient
+ * brush-stroke underline. Copy that is a single sentence — which is most
+ * section headings — renders plainly rather than breaking.
+ */
+interface Props {
+  text: string;
+  as?: "h1" | "h2" | "h3";
+  id?: string;
+  class?: string;
+  /**
+   * Colour for the accent run. Whatever is passed must clear 4.5:1 against
+   * the surface it sits on — `brand-ink` flips per theme and is the safe
+   * default; fixed ramp values fail one theme or the other.
+   */
+  accentClass?: string;
+}
+
+const {
+  text,
+  as: Tag = "h2",
+  id,
+  class: className = "",
+  accentClass = "text-brand-ink",
+} = Astro.props;
+
+const { lead, accent, hasAccent } = splitAccent(text);
+---
+
+<Tag id={id} class:list={[className]}>
+  {lead}
+  {
+    hasAccent && (
+      <>
+        {" "}
+        <span class:list={["accent-run", accentClass]}>{accent}</span>
+      </>
+    )
+  }
+</Tag>
+
+<style>
+  /*
+   * The stroke is painted as a background rather than a border or
+   * text-decoration, so it follows the text across line wraps and needs no
+   * directional offsets. Being decorative, it can use the gold that the
+   * heading text itself cannot — gold-500 is 1.79:1 on the light canvas,
+   * well under the 3:1 large-text floor.
+   */
+  .accent-run {
+    background-image: linear-gradient(
+      90deg,
+      var(--color-brand-400),
+      var(--color-gold-400) 85%,
+      transparent
+    );
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 0.16em;
+    padding-bottom: 0.12em;
+    /*
+     * Headings here run at 1.11–1.2 leading, which leaves no room under a
+     * wrapped line — the stroke collides with the ascenders below. Only the
+     * accent's own line boxes need the extra room, so set it here rather than
+     * loosening every heading.
+     */
+    line-height: 1.3;
+    /*
+     * Without `clone`, a wrapped phrase gets ONE background box spanning all
+     * its line fragments: the stroke overruns the last line and collides with
+     * the next. `clone` gives each fragment its own box.
+     */
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  /*
+   * `background-image` has no logical-direction equivalent, so RTL needs the
+   * gradient mirrored explicitly — otherwise the stroke fades out under the
+   * *start* of the phrase and draws from the wrong edge.
+   */
+  :global([dir="rtl"]) .accent-run {
+    background-image: linear-gradient(
+      270deg,
+      var(--color-brand-400),
+      var(--color-gold-400) 85%,
+      transparent
+    );
+    background-position: 100% 100%;
+  }
+
+  /*
+   * Draw the stroke as the heading scrolls into view, reusing the existing
+   * reveal hooks rather than adding a second observer. Gated on
+   * `data-reveal-ready` so that without JS the stroke is simply present —
+   * the base rule above already renders it full width.
+   */
+  :global([data-reveal-ready] [data-reveal]) .accent-run {
+    background-size: 0 0.16em;
+    transition: background-size 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+  }
+
+  :global([data-reveal-ready] [data-reveal].is-revealed) .accent-run {
+    background-size: 100% 0.16em;
+  }
+
+  /*
+   * The global reduced-motion block zeroes transition *duration*, but leaving
+   * the zero-width start state in play is a needless risk for something that
+   * carries emphasis. Pin it open instead.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    :global([data-reveal-ready] [data-reveal]) .accent-run,
+    :global([data-reveal-ready] [data-reveal].is-revealed) .accent-run {
+      background-size: 100% 0.16em;
+      transition: none;
+    }
+  }
+</style>

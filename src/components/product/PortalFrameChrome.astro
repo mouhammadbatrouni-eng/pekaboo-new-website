@@ -1,0 +1,33 @@
+---
+/**
+ * The browser window a portal screen sits in — traffic lights, address pill,
+ * rounded corners, soft border and shadow.
+ *
+ * The address is a display string rather than `SITE.loginUrl`: that value is a
+ * link people follow, this is a picture of a URL bar. They happen to share a
+ * host today, so keep them in step by hand if either moves.
+ */
+interface Props {
+  class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+---
+
+<div
+  class:list={[
+    "overflow-hidden rounded-xl border border-ink-900/10 bg-white shadow-soft-lg",
+    className,
+  ]}
+>
+  <div class="flex items-center gap-2 border-b border-ink-100 bg-ink-50 px-3 py-2.5 sm:px-4">
+    <span class="h-2.5 w-2.5 rounded-full bg-danger/40"></span>
+    <span class="h-2.5 w-2.5 rounded-full bg-warning/40"></span>
+    <span class="h-2.5 w-2.5 rounded-full bg-success/40"></span>
+    <span class="ml-2 truncate rounded-full bg-white px-3 py-1 text-[10px] font-medium text-ink-400 sm:text-[11px]">
+      peek.peek-a-boo.app
+    </span>
+  </div>
+
+  <slot />
+</div>

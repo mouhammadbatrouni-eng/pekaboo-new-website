@@ -1,0 +1,52 @@
+---
+import { Camera, Users, House, MessageCircle, Grid2x2 } from "@lucide/astro";
+
+/**
+ * App chrome drawn in markup, for the one screen we have no capture of yet.
+ *
+ * Every other app screen on the site is a real capture, which already carries
+ * its own header and tab bar. This fills the same 402×874 frame the same way,
+ * so the two sit side by side in the sticky phone without the swap being
+ * visible as a change of shell. Delete this once a payments capture exists.
+ */
+interface Props {
+  title: string;
+  /** Which tab reads as current. */
+  active?: "feed" | "class" | "home" | "messages" | "more";
+  rtl?: boolean;
+}
+
+const { title, active = "more", rtl = false } = Astro.props;
+
+const tabs = [
+  { key: "feed", icon: Camera },
+  { key: "class", icon: Users },
+  { key: "home", icon: House },
+  { key: "messages", icon: MessageCircle },
+  { key: "more", icon: Grid2x2 },
+] as const;
+---
+
+<div class="flex h-full flex-col bg-[#fdfaf6]" dir={rtl ? "rtl" : "ltr"}>
+  <div class="flex items-center gap-2 px-4 pb-3 pt-5">
+    <img src="/peekaboo-mark.png" alt="" width="28" height="28" class="h-7 w-7 rounded-lg" />
+    <span class="font-heading text-lg tracking-[-0.03em] text-brand-700">{title}</span>
+  </div>
+
+  <div class="min-h-0 flex-1 overflow-hidden">
+    <slot />
+  </div>
+
+  <div class="flex items-center justify-around border-t border-ink-100 bg-white py-3">
+    {tabs.map(({ key, icon: Icon }) => (
+      <span
+        class:list={[
+          "flex h-7 w-9 items-center justify-center rounded-lg",
+          key === active ? "bg-brand-500/10 text-brand-600" : "text-ink-300",
+        ]}
+      >
+        <Icon size={16} aria-hidden="true" />
+      </span>
+    ))}
+  </div>
+</div>

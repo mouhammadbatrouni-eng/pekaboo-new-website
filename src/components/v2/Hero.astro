@@ -1,0 +1,223 @@
+---
+import Container from "../ui/Container.astro";
+import Button from "../ui/Button.astro";
+import AccentHeading from "../ui/AccentHeading.astro";
+import PortalFrame from "../product/PortalFrame.astro";
+import PhoneFrame from "../product/PhoneFrame.astro";
+import { ArrowDown, Check } from "@lucide/astro";
+import { routePath, type Dict, type Lang } from "../../lib/i18n";
+
+interface Props {
+  t: Dict;
+  lang: Lang;
+  rtl: boolean;
+}
+
+const { t, lang } = Astro.props;
+
+/*
+ * Proof-point chips rotate through the three brand accents. Translucent fills
+ * rather than the pale `*-soft` tints, so one value reads correctly on both
+ * the light canvas and the dark navy.
+ */
+const pointAccents = [
+  "bg-brand-500/15 text-brand-ink",
+  "bg-mint/25 text-success",
+  "bg-gold-500/20 text-warning",
+];
+---
+
+<section id="top" class="relative overflow-hidden pt-12 pb-16 sm:pt-16 sm:pb-20">
+  {/*
+    Layered backdrop: the original brand wash, three slow-drifting aurora orbs
+    for depth, and a faint grid for craft. All decorative, all aria-hidden, and
+    all of it stops under the global reduced-motion block.
+  */}
+  <div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+    <div
+      class="absolute inset-x-0 -top-52 h-[640px] bg-[radial-gradient(58%_58%_at_50%_0%,var(--color-brand-100),transparent)] dark:opacity-30"
+    >
+    </div>
+
+    <div
+      class="hero-orb hero-orb--a absolute -top-40 start-[-12%] h-[520px] w-[520px] rounded-full opacity-55 blur-3xl dark:opacity-20"
+      style="background: radial-gradient(circle, var(--color-brand-300), transparent 68%)"
+    >
+    </div>
+    <div
+      class="hero-orb hero-orb--b absolute -top-24 end-[-8%] h-[440px] w-[440px] rounded-full opacity-45 blur-3xl dark:opacity-[0.18]"
+      style="background: radial-gradient(circle, var(--color-gold-300), transparent 68%)"
+    >
+    </div>
+    <div
+      class="hero-orb hero-orb--c absolute top-[38%] start-[38%] h-[380px] w-[380px] rounded-full opacity-40 blur-3xl dark:opacity-[0.15]"
+      style="background: radial-gradient(circle, var(--color-mint), transparent 70%)"
+    >
+    </div>
+
+    <div
+      class="absolute inset-0 opacity-[0.04] [--grid:var(--color-ink-900)] [background-image:linear-gradient(var(--grid)_1px,transparent_1px),linear-gradient(90deg,var(--grid)_1px,transparent_1px)] [background-size:58px_58px] [mask-image:radial-gradient(72%_52%_at_50%_0%,#000,transparent)] dark:opacity-[0.07] dark:[--grid:#ffffff]"
+    >
+    </div>
+  </div>
+
+  <Container>
+    <div class="grid items-center gap-14 lg:grid-cols-[1fr_1.02fr] lg:gap-8">
+      <div data-reveal>
+        <p
+          class="mb-5 inline-flex items-center gap-2 rounded-full border border-brand-200/60 bg-surface px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-brand-ink shadow-soft"
+        >
+          {/* Live dot: the ring reads "running right now", the solid dot stays put. */}
+          <span class="relative flex h-1.5 w-1.5">
+            <span
+              class="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-500 opacity-70"
+            ></span>
+            <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-500"></span>
+          </span>
+          {t.hero.badge}
+        </p>
+
+        <AccentHeading
+          as="h1"
+          text={t.hero.heading}
+          class="text-[2.5rem] leading-[1.12] text-balance sm:text-[3.2rem] lg:text-[3.5rem]"
+        />
+
+        <p class="mt-6 max-w-xl text-lg leading-relaxed text-muted">{t.hero.body}</p>
+
+        <div class="mt-9 flex flex-wrap items-center gap-3">
+          <Button href={routePath("getStarted", lang)} size="lg">{t.common.getStarted}</Button>
+          <Button href="#plans" variant="secondary" size="lg">
+            {t.common.explore}
+            <ArrowDown size={16} aria-hidden="true" />
+          </Button>
+        </div>
+
+        {/* The five-second test: name both halves of the product explicitly. */}
+        <ul class="mt-9 flex flex-wrap gap-2.5 text-sm">
+          {
+            t.hero.points.map((point, i) => (
+              <li class="inline-flex items-center gap-2 rounded-full border border-line bg-surface/70 py-1.5 pe-4 ps-1.5 font-semibold text-text shadow-soft backdrop-blur-sm">
+                <span
+                  class={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${pointAccents[i % pointAccents.length]}`}
+                >
+                  <Check size={11} stroke-width={3.5} aria-hidden="true" />
+                </span>
+                {point}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      {/* Both halves of the product in one frame: the portal your team runs on,
+          and the app families follow. The phone sits just past the portal's
+          edge so the two surfaces layer without the app covering portal
+          content. Logical `pe`/`end` keep that arrangement correct in RTL. */}
+      <div class="relative" data-reveal data-reveal-delay="120">
+        {/* Grounding glow — lifts the frames off the wash so they read as
+            objects in space rather than images pasted onto a gradient. */}
+        <div
+          class="pointer-events-none absolute inset-x-6 top-10 bottom-0 -z-10 rounded-[3rem] bg-brand-400/25 blur-3xl dark:bg-brand-400/15"
+          aria-hidden="true"
+        >
+        </div>
+
+        {/* Dashboard rather than Communication: the communication crop has to
+            stop above its feed (identifiable children below that line), which
+            leaves it too short to pair with a phone. */}
+        <div class="lg:pe-[118px] xl:pe-[132px]">
+          <PortalFrame shot="dashboard" alt={t.product.shots.portalDashboard} eager />
+        </div>
+        {/* Daily Report rather than the timeline: the timeline capture carries
+            a named school in its post bodies and large, identifiable faces,
+            neither of which belongs on a public page. This one is still the
+            family-facing view the hero promises. Float on an inner element so
+            it cannot clobber the offset. */}
+        <div class="absolute -bottom-6 end-0 hidden lg:block">
+          <div class="hero-float w-[138px] xl:w-[152px]">
+            <PhoneFrame
+              shot="dailyReport"
+              alt={t.product.shots.appDailyReport}
+              eager
+              class="max-w-none"
+            />
+          </div>
+        </div>
+        <div class="mt-8 flex justify-center lg:hidden">
+          <PhoneFrame
+            shot="dailyReport"
+            alt={t.product.shots.appDailyReport}
+            class="max-w-[220px]"
+          />
+        </div>
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style>
+  /*
+   * The accent heading (colour + gradient stroke) lives in AccentHeading.astro
+   * so every section shares one implementation. What stays here is the hero's
+   * own scenery — the aurora and the floating phone, which are deliberately
+   * not repeated further down the page.
+   */
+
+  /* Offset periods, so the three orbs never resolve into a visible loop. */
+  .hero-orb--a {
+    animation: hero-drift-a 26s ease-in-out infinite alternate;
+  }
+  .hero-orb--b {
+    animation: hero-drift-b 31s ease-in-out infinite alternate;
+  }
+  .hero-orb--c {
+    animation: hero-drift-c 37s ease-in-out infinite alternate;
+  }
+
+  /*
+   * Translate only — no scale().
+   *
+   * These are `blur-3xl` layers. A translated blurred layer is rasterised once
+   * and moved by the compositor for free; scaling one forces the whole blur to
+   * be re-rasterised every frame, which is far more expensive than it looks
+   * and was making the page feel heavy. The drift reads the same without it.
+   */
+  @keyframes hero-drift-a {
+    to {
+      transform: translate3d(7%, 9%, 0);
+    }
+  }
+  @keyframes hero-drift-b {
+    to {
+      transform: translate3d(-8%, 11%, 0);
+    }
+  }
+  @keyframes hero-drift-c {
+    to {
+      transform: translate3d(5%, -10%, 0);
+    }
+  }
+
+  .hero-float {
+    animation: hero-float 7s ease-in-out infinite alternate;
+  }
+
+  @keyframes hero-float {
+    to {
+      transform: translateY(-12px);
+    }
+  }
+
+  /*
+   * The global reduced-motion block already zeroes animation duration, but
+   * ambient scenery that loops forever is exactly what that preference is
+   * about — stop it outright rather than running it imperceptibly fast.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-orb,
+    .hero-float {
+      animation: none;
+    }
+  }
+</style>

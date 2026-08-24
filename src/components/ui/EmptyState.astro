@@ -1,0 +1,20 @@
+---
+import { Inbox } from "@lucide/astro";
+
+interface Props {
+  title: string;
+  description?: string;
+  class?: string;
+}
+
+const { title, description, class: className = "" } = Astro.props;
+---
+
+<div class:list={["flex flex-col items-center rounded-2xl border border-dashed border-ink-200 bg-ink-50/50 px-6 py-16 text-center", className]}>
+  <span class="flex h-12 w-12 items-center justify-center rounded-full bg-white text-ink-400 shadow-soft">
+    <Inbox size={22} stroke-width={1.8} aria-hidden="true" />
+  </span>
+  <p class="mt-4 text-base font-bold text-ink-800">{title}</p>
+  {description && <p class="mt-1.5 max-w-sm text-sm text-ink-500">{description}</p>}
+  <slot />
+</div>

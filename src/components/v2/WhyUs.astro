@@ -1,0 +1,56 @@
+---
+import Container from "../ui/Container.astro";
+import ScrollSection from "./ScrollSection.astro";
+import SectionIntro from "./SectionIntro.astro";
+import FeatureIcon from "../ui/FeatureIcon.astro";
+import { glow } from "../../lib/glow";
+import type { Dict } from "../../lib/i18n";
+
+interface Props {
+  t: Dict;
+}
+
+const { t } = Astro.props;
+
+/**
+ * Icons and accent tones stay in code, matched to the reasons by position.
+ * Deliberately carries no statistics — no customer counts, percentages or
+ * time-saved figures, because none are verified.
+ */
+const META = [
+  { icon: "attendance", tone: "brand" as const },
+  { icon: "finance", tone: "gold" as const },
+  { icon: "communication", tone: "coral" as const },
+  { icon: "curriculum", tone: "mint" as const },
+  { icon: "calendar", tone: "violet" as const },
+  { icon: "security", tone: "brand" as const },
+];
+
+---
+
+<ScrollSection id="why-us" label={t.nav.whyUs}>
+  <Container>
+    <SectionIntro
+      id="why-us-heading"
+      step="06"
+      eyebrow={t.whyUs.eyebrow}
+      title={t.whyUs.heading}
+      description={t.whyUs.body}
+    />
+
+    <div class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {t.whyUs.reasons.map((reason, index) => (
+        <article
+          data-reveal
+          data-reveal-delay={index * 70}
+          style={glow(META[index].tone)}
+          class="glow-card rounded-xl border border-line bg-surface p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-soft-lg"
+        >
+          <FeatureIcon icon={META[index].icon} tone={META[index].tone} class="h-11 w-11" />
+          <h3 class="mt-5 font-heading text-lg text-body">{reason.title}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-muted">{reason.description}</p>
+        </article>
+      ))}
+    </div>
+  </Container>
+</ScrollSection>

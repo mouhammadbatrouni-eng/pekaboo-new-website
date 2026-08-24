@@ -1,0 +1,75 @@
+---
+type Variant = "primary" | "secondary" | "gold" | "ghost";
+type Size = "sm" | "md" | "lg";
+
+interface Props {
+  href?: string;
+  variant?: Variant;
+  size?: Size;
+  class?: string;
+  id?: string;
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
+  /** Anything else — `target`, `rel`, `data-*`, `aria-*` — lands on the element. */
+  [key: string]: unknown;
+}
+
+const {
+  href,
+  variant = "primary",
+  size = "md",
+  class: className = "",
+  id,
+  type = "button",
+  disabled = false,
+  ...rest
+} = Astro.props;
+
+/*
+ * Note: `inline-flex` here competes with any `hidden` passed via `class` —
+ * both are display utilities at equal specificity, and Tailwind emits
+ * `inline-flex` later, so it wins. To hide a Button responsively, wrap it in
+ * an element that carries the visibility classes rather than passing `hidden`.
+ */
+const base =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full border font-bold tracking-[-0.01em] transition-all duration-200 " +
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 " +
+  "active:translate-y-px disabled:opacity-50 disabled:pointer-events-none";
+
+/*
+ * The portal's own button gradient (#2fc5f7 → #1cb6ea) gives white text only
+ * 2.35:1, well short of the 4.5:1 that 16px bold text needs. These are the
+ * same hue family, deepened until white passes AA across the whole gradient —
+ * still unmistakably the Peekaboo blue button, but actually readable.
+ * The bright brand blue is retained everywhere it isn't behind text.
+ */
+const variants: Record<Variant, string> = {
+  primary:
+    "border-transparent bg-[linear-gradient(180deg,#0e7fa8_0%,#0e77a1_100%)] text-white shadow-glow-brand hover:bg-[linear-gradient(180deg,#0d7599_0%,#0d6f95_100%)] hover:shadow-[0_22px_36px_rgba(28,182,234,0.34)]",
+  gold: "border-transparent bg-[linear-gradient(180deg,#a06209_0%,#8f5708_100%)] text-white shadow-glow-gold hover:shadow-[0_22px_36px_rgba(255,174,19,0.32)]",
+  secondary:
+    "border-line bg-surface text-body shadow-soft hover:border-brand-300 hover:text-brand-ink",
+  ghost: "border-transparent text-body hover:text-brand-ink hover:bg-brand-50",
+};
+
+const sizes: Record<Size, string> = {
+  /** Compact — for the narrow-screen header, where space is tight. */
+  sm: "px-3.5 py-2 text-[13px]",
+  md: "px-5 py-2.5 text-sm",
+  lg: "px-7 py-3.5 text-base",
+};
+
+const classes = [base, variants[variant], sizes[size], className].join(" ");
+---
+
+{
+  href ? (
+    <a href={href} id={id} class={classes} {...rest}>
+      <slot />
+    </a>
+  ) : (
+    <button type={type} id={id} disabled={disabled} class={classes} {...rest}>
+      <slot />
+    </button>
+  )
+}

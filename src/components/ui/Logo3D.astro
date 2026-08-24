@@ -1,0 +1,359 @@
+---
+/**
+ * The Peekaboo mark, sitting in a shallow well in the page surface and rising
+ * out of it as the visitor scrolls down.
+ *
+ * Why CSS 3D and not Three.js / R3F
+ * ---------------------------------
+ * The mark is a raster PNG with no vector paths, so there is no geometry to
+ * extrude — WebGL would render exactly the textured quad the compositor
+ * already gives us for free, in exchange for ~200KB of framework on a site
+ * that currently ships no client framework at all. The depth here is sold by
+ * the projected shadow and the parallax between layers, both of which CSS
+ * does natively on the GPU.
+ *
+ * The illusion is built from four stacked layers, not one transformed image:
+ *   well   — the recess it starts inside; contracts and fades as it lifts
+ *   shadow — a separate ellipse, NOT a box-shadow (the PNG is transparent, so
+ *            box-shadow would trace its square bounding box rather than the
+ *            bird). Grows, softens and offsets with height.
+ *   mark   — the image itself, translated on Z
+ *   sheen  — a highlight masked to the mark's own alpha, so it lands on the
+ *            bird rather than a rectangle
+ *
+ * The mark already has lighting painted into it from the upper left, so the
+ * sheen is biased to that side and travels only a short arc. A highlight that
+ * contradicts baked-in shading reads as broken rather than dimensional.
+ *
+ * When an SVG lands, swap the <img> for inline paths and this all still
+ * applies — the sheen mask can then use the paths instead of the PNG.
+ */
+interface Props {
+  /** Rendered size in px. Keep at or under 88: the source is 175px, so beyond
+      that it is under 2× and goes soft on retina. */
+  size?: number;
+  class?: string;
+}
+
+const { size = 76, class: className = "" } = Astro.props;
+---
+
+<div
+  class:list={["logo3d", className]}
+  style={`--size:${size}px`}
+  data-logo3d
+  aria-hidden="true"
+>
+  <div class="logo3d__stage">
+    <div class="logo3d__well"></div>
+    <div class="logo3d__shadow"></div>
+    <div class="logo3d__mark">
+      <img src="/peekaboo-mark.png" alt="" width={size} height={size} decoding="async" />
+      <span class="logo3d__sheen"></span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .logo3d {
+    /* A short focal length makes the Z movement read as real depth. Too long
+       and the whole thing flattens into a scale animation. */
+    perspective: 520px;
+    perspective-origin: 50% 45%;
+    width: var(--size);
+    height: var(--size);
+    flex-shrink: 0;
+    position: relative;
+
+    /* Driven from script; these are the resting (fully embedded) values so the
+       component is correct before any JS runs. */
+    --e: 0; /* emergence, 0 embedded → 1 risen */
+    --rx: 0deg;
+    --ry: 0deg;
+    --sheen-x: 32%;
+    --sheen-y: 26%;
+  }
+
+  .logo3d__stage {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--rx)) rotateY(var(--ry));
+  }
+
+  /*
+   * The slot it sits in. A full circular gradient behind the mark reads as a
+   * grey smudge rather than a recess — the eye needs the dark to be *pinched
+   * at the base*, where an object meets the surface it is set into. So this is
+   * a narrow ellipse at the foot, which widens shut as the mark lifts away.
+   */
+  .logo3d__well {
+    position: absolute;
+    left: 50%;
+    bottom: 6%;
+    width: 62%;
+    height: 11%;
+    border-radius: 50%;
+    background: radial-gradient(
+      ellipse at center,
+      color-mix(in srgb, var(--color-ink-900) 38%, transparent),
+      transparent 72%
+    );
+    transform: translateX(-50%) scaleX(calc(1 - var(--e) * 0.4));
+    opacity: calc((1 - var(--e)) * 0.85);
+  }
+
+  /*
+   * Ground shadow. Kept as its own element so height can drive offset, blur
+   * proxy (scale) and opacity independently — and so we never animate a
+   * filter blur radius, which forces an expensive re-rasterise every frame.
+   */
+  .logo3d__shadow {
+    position: absolute;
+    left: 50%;
+    bottom: -6%;
+    width: 78%;
+    height: 16%;
+    border-radius: 50%;
+    background: radial-gradient(
+      ellipse at center,
+      color-mix(in srgb, var(--color-ink-950) 34%, transparent),
+      transparent 70%
+    );
+    /* Wider + fainter as it rises: the cue that actually sells "off the page". */
+    transform: translate(-50%, calc(var(--e) * 62%)) scale(calc(1 + var(--e) * 0.85));
+    opacity: calc(0.16 + var(--e) * 0.34);
+    filter: blur(calc(1px + var(--e) * 3px));
+  }
+
+  .logo3d__mark {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    /* The Z lift, plus a touch of lateral rise so it arcs rather than
+       telescoping straight at the viewer. */
+    transform: translate3d(0, calc(var(--e) * -6%), calc(var(--e) * 46px));
+  }
+
+  .logo3d__mark img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    /*
+     * One filter chain, because a second `filter` declaration would silently
+     * replace the first rather than adding to it.
+     *
+     * brightness/saturate: embedded, the bird reads as *shaded* rather than
+     * *faded*. Dropping opacity over a white card just makes it milky;
+     * darkening it is what being below the surface actually looks like.
+     *
+     * drop-shadow: alpha-aware, so the contact shadow follows the bird's
+     * silhouette where a box-shadow would trace its bounding box.
+     */
+    filter: brightness(calc(0.9 + var(--e) * 0.1)) saturate(calc(0.88 + var(--e) * 0.12))
+      drop-shadow(
+        0 calc(var(--e) * 6px) calc(var(--e) * 10px)
+          color-mix(in srgb, var(--color-ink-950) 26%, transparent)
+      );
+  }
+
+  /*
+   * Specular sheen, masked to the mark's own alpha so it only ever lands on
+   * the bird. Biased upper-left to agree with the lighting already painted
+   * into the artwork.
+   */
+  .logo3d__sheen {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      circle at var(--sheen-x) var(--sheen-y),
+      rgba(255, 255, 255, 0.55),
+      rgba(255, 255, 255, 0.08) 38%,
+      transparent 62%
+    );
+    mix-blend-mode: soft-light;
+    opacity: calc(var(--e) * 0.9);
+    -webkit-mask-image: url("/peekaboo-mark.png");
+    mask-image: url("/peekaboo-mark.png");
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+  }
+
+  /* On the dark canvas the shadow needs to be darker still to register, and
+     the well should read as a hole rather than a smudge. */
+  :global(.dark) .logo3d__shadow {
+    opacity: calc(0.22 + var(--e) * 0.4);
+  }
+
+  :global(.dark) .logo3d__well {
+    background: radial-gradient(circle at 50% 42%, rgba(0, 0, 0, 0.5), transparent 72%);
+    box-shadow: inset 0 2px 7px rgba(0, 0, 0, 0.55);
+  }
+
+  /*
+   * Motion is the entire point of this component, so under reduced motion it
+   * does not degrade to a slower version — it resolves to the finished, risen
+   * state and stops listening. Nothing moves, nothing is lost.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .logo3d {
+      --e: 1;
+      --rx: 0deg;
+      --ry: 0deg;
+    }
+
+    .logo3d__mark,
+    .logo3d__shadow,
+    .logo3d__well,
+    .logo3d__stage {
+      transition: none !important;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Drives --e (scroll) and --rx/--ry (pointer) through a spring so the two
+   * inputs can fight each other without stuttering.
+   *
+   * Runs only while the element is on screen, and parks itself once the
+   * springs settle, so an idle page costs nothing.
+   */
+  type Spring = { value: number; velocity: number; target: number };
+
+  const spring = (value: number): Spring => ({ value, velocity: 0, target: value });
+
+  /** Semi-implicit Euler. Ratio just under 1 leaves a little overshoot — a
+      perfectly critically-damped move reads as mechanical. */
+  function step(s: Spring, dt: number, stiffness: number, ratio: number) {
+    const damping = ratio * 2 * Math.sqrt(stiffness);
+    const a = (s.target - s.value) * stiffness - s.velocity * damping;
+    s.velocity += a * dt;
+    s.value += s.velocity * dt;
+  }
+
+  const settled = (s: Spring) =>
+    Math.abs(s.target - s.value) < 0.0005 && Math.abs(s.velocity) < 0.0005;
+
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  for (const el of document.querySelectorAll<HTMLElement>("[data-logo3d]")) {
+    if (reduced.matches) continue;
+
+    const e = spring(0);
+    const rx = spring(0);
+    const ry = spring(0);
+    let sheenX = 32;
+    let sheenY = 26;
+    let visible = false;
+    let raf = 0;
+    let last = 0;
+
+    function readScroll() {
+      const r = el.getBoundingClientRect();
+      const centre = r.top + r.height / 2;
+      const vh = window.innerHeight || 1;
+      /* Embedded when the card is still low in the viewport; fully risen by
+         the time it reaches the upper-middle. Scrolling down therefore lifts
+         it, and scrolling back up settles it again. */
+      const p = (vh * 0.92 - centre) / (vh * 0.5);
+      e.target = Math.min(1, Math.max(0, p));
+    }
+
+    /* Track the pointer across the whole card, not just the 76px mark —
+       otherwise the tilt only responds when the cursor is directly on top of
+       it, which feels broken rather than responsive. Distance is still
+       measured from the mark's own centre so the tilt points at the cursor. */
+    const zone = el.closest<HTMLElement>("[data-logo3d-zone]") ?? el;
+
+    function onPointer(ev: PointerEvent) {
+      const r = el.getBoundingClientRect();
+      const z = zone.getBoundingClientRect();
+      /* Normalise against the zone's reach so a wide card doesn't peg the
+         tilt at maximum the moment the cursor enters it. */
+      const nx = (ev.clientX - (r.left + r.width / 2)) / Math.max(r.width, z.width / 2) * 2;
+      const ny = (ev.clientY - (r.top + r.height / 2)) / Math.max(r.height, z.height / 2) * 2;
+      /* Hard clamp at 1, so the angles below are true maxima. The mark sits at
+         one end of a wide card, so the raw ratio is lopsided — without this the
+         cursor at the far edge pushed past 14°, where the flat artwork starts
+         to read as a sheet of paper rather than an object. */
+      const clamp = (v: number) => Math.min(1, Math.max(-1, v));
+      /* Tilt toward the cursor. Small angles — past ~10° the flat artwork
+         starts to read as a sheet of paper rather than an object. */
+      ry.target = clamp(nx) * 9;
+      rx.target = clamp(ny) * -7;
+      /* Sheen travels a short arc around its baked upper-left origin. */
+      sheenX = 32 + clamp(nx) * 12;
+      sheenY = 26 + clamp(ny) * 9;
+      start();
+    }
+
+    function onLeave() {
+      rx.target = 0;
+      ry.target = 0;
+      sheenX = 32;
+      sheenY = 26;
+      start();
+    }
+
+    function frame(now: number) {
+      const dt = Math.min(0.032, (now - last) / 1000 || 0.016);
+      last = now;
+
+      step(e, dt, 90, 0.8);
+      step(rx, dt, 170, 0.85);
+      step(ry, dt, 170, 0.85);
+
+      el.style.setProperty("--e", e.value.toFixed(4));
+      el.style.setProperty("--rx", rx.value.toFixed(2) + "deg");
+      el.style.setProperty("--ry", ry.value.toFixed(2) + "deg");
+      el.style.setProperty("--sheen-x", sheenX.toFixed(1) + "%");
+      el.style.setProperty("--sheen-y", sheenY.toFixed(1) + "%");
+
+      if (visible && !(settled(e) && settled(rx) && settled(ry))) {
+        raf = requestAnimationFrame(frame);
+      } else {
+        raf = 0;
+      }
+    }
+
+    function start() {
+      if (raf || !visible) return;
+      last = performance.now();
+      raf = requestAnimationFrame(frame);
+    }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          visible = entry.isIntersecting;
+          if (visible) {
+            readScroll();
+            start();
+          } else if (raf) {
+            cancelAnimationFrame(raf);
+            raf = 0;
+          }
+        }
+      },
+      { rootMargin: "20% 0px" },
+    );
+
+    io.observe(el);
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!visible) return;
+        readScroll();
+        start();
+      },
+      { passive: true },
+    );
+
+    window.addEventListener("resize", readScroll, { passive: true });
+    zone.addEventListener("pointermove", onPointer);
+    zone.addEventListener("pointerleave", onLeave);
+  }
+</script>

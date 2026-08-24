@@ -1,0 +1,56 @@
+---
+import Container from "../ui/Container.astro";
+import ScrollSection from "./ScrollSection.astro";
+import SectionIntro from "./SectionIntro.astro";
+import { Plus } from "@lucide/astro";
+import type { Dict } from "../../lib/i18n";
+
+/**
+ * The objection-handling step, immediately before the form.
+ *
+ * Built on <details>/<summary> so it opens and closes with no JavaScript at
+ * all — matching the rest of the page, and meaning the answers are present in
+ * the HTML for crawlers even though they're visually collapsed. The same
+ * `t.faq.items` array is passed to BaseLayout for FAQPage structured data, so
+ * the copy and the schema can never drift apart.
+ */
+interface Props {
+  t: Dict;
+}
+
+const { t } = Astro.props;
+---
+
+<ScrollSection id="faq" label={t.nav.faq} surface="tint">
+  <Container>
+    <SectionIntro
+      id="faq-heading"
+      step="08"
+      eyebrow={t.faq.eyebrow}
+      title={t.faq.heading}
+      description={t.faq.body}
+    />
+
+    <div class="mx-auto mt-14 max-w-3xl space-y-3">
+      {t.faq.items.map((item) => (
+        <details
+          class="group rounded-2xl border border-line bg-surface px-6 shadow-soft transition-colors open:border-brand-300"
+          data-reveal
+        >
+          <summary
+            class="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-start font-heading text-lg text-body transition-colors hover:text-brand-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-500 [&::-webkit-details-marker]:hidden"
+          >
+            {item.question}
+            <span
+              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line text-brand-ink transition-transform duration-200 group-open:rotate-45"
+              aria-hidden="true"
+            >
+              <Plus size={16} />
+            </span>
+          </summary>
+          <p class="pb-6 pe-14 text-base leading-relaxed text-muted">{item.answer}</p>
+        </details>
+      ))}
+    </div>
+  </Container>
+</ScrollSection>

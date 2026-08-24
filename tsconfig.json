@@ -1,0 +1,6 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*"],
+  "//": "studio/ is a separate package with its own tsconfig and dependencies. Vercel installs only the root package.json, so type-checking it here fails the deploy on unresolvable 'sanity' imports. Check it with `cd studio && npx tsc`.",
+  "exclude": ["dist", "studio"]
+}

@@ -1,0 +1,202 @@
+---
+import Button from "../ui/Button.astro";
+import { CircleCheckBig, CircleAlert } from "@lucide/astro";
+import { CENTER_COUNT_OPTIONS } from "../../lib/validations/contact";
+import { SITE } from "../../lib/content/site";
+import { routePath, type Dict, type Lang } from "../../lib/i18n";
+
+interface Props {
+  t: Dict;
+  lang: Lang;
+}
+
+const { t, lang } = Astro.props;
+const f = t.contact.form;
+
+const fieldClass =
+  "w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm text-body placeholder:text-subtle transition-colors focus:border-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-100 aria-[invalid=true]:border-danger";
+const labelClass = "mb-1.5 block text-sm font-semibold text-body";
+---
+
+<div>
+  <div
+    id="contact-banner-success"
+    class="mb-6 hidden items-start gap-3 rounded-xl border border-success/20 bg-success-soft px-5 py-4 text-sm text-success"
+    role="status"
+    tabindex="-1"
+  >
+    <CircleCheckBig size={20} class="mt-0.5 shrink-0" aria-hidden="true" />
+    <p><strong class="font-bold">{f.successTitle}</strong> {f.success}</p>
+  </div>
+  <div
+    id="contact-banner-error"
+    class="mb-6 hidden items-start gap-3 rounded-xl border border-danger/20 bg-danger-soft px-5 py-4 text-sm text-danger"
+    role="alert"
+    tabindex="-1"
+  >
+    <CircleAlert size={20} class="mt-0.5 shrink-0" aria-hidden="true" />
+    <p>
+      {f.error}
+      <a href={SITE.phoneHref} class="font-bold underline ltr-inline" dir="ltr">{SITE.phone}</a>.
+    </p>
+  </div>
+
+  <form
+    id="contact-form-el"
+    method="POST"
+    action="/api/contact"
+    class="rounded-2xl border border-line bg-surface p-6 shadow-soft sm:p-8"
+    data-sending-label={f.sending}
+    novalidate
+  >
+    <div class="grid gap-5 sm:grid-cols-2">
+      <div>
+        <label for="name" class={labelClass}>{f.name}</label>
+        <input type="text" id="name" name="name" required autocomplete="name" class={fieldClass} />
+        <p class="mt-1.5 hidden text-xs font-medium text-danger" data-error-for="name"></p>
+      </div>
+      <div>
+        <label for="email" class={labelClass}>{f.email}</label>
+        <input type="email" id="email" name="email" required autocomplete="email" class={fieldClass} dir="ltr" />
+        <p class="mt-1.5 hidden text-xs font-medium text-danger" data-error-for="email"></p>
+      </div>
+    </div>
+
+    <div class="mt-5 grid gap-5 sm:grid-cols-2">
+      <div>
+        <label for="organisation" class={labelClass}>{f.organisation}</label>
+        <input type="text" id="organisation" name="organisation" required autocomplete="organization" class={fieldClass} />
+        <p class="mt-1.5 hidden text-xs font-medium text-danger" data-error-for="organisation"></p>
+      </div>
+      <div>
+        <label for="phone" class={labelClass}>
+          {f.phone} <span class="font-normal text-subtle">{f.optional}</span>
+        </label>
+        <input type="tel" id="phone" name="phone" autocomplete="tel" class={fieldClass} dir="ltr" />
+      </div>
+    </div>
+
+    <div class="mt-5">
+      <label for="centers" class={labelClass}>
+        {f.centers} <span class="font-normal text-subtle">{f.optional}</span>
+      </label>
+      <select id="centers" name="centers" class={fieldClass}>
+        <option value="">{f.centersPlaceholder}</option>
+        {CENTER_COUNT_OPTIONS.map((option) => <option value={option}>{option}</option>)}
+      </select>
+    </div>
+
+    <div class="mt-5">
+      <label for="message" class={labelClass}>{f.message}</label>
+      <textarea
+        id="message"
+        name="message"
+        required
+        rows="5"
+        placeholder={f.messagePlaceholder}
+        class:list={[fieldClass, "resize-y"]}
+      ></textarea>
+      <p class="mt-1.5 hidden text-xs font-medium text-danger" data-error-for="message"></p>
+    </div>
+
+    {/* Honeypot — off-screen and hidden from assistive tech. */}
+    <div class="absolute start-[-9999px] top-0" aria-hidden="true">
+      <label for="company">Company</label>
+      <input type="text" id="company" name="company" tabindex="-1" autocomplete="off" />
+    </div>
+
+    <div class="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center">
+      <Button type="submit" size="lg" class="w-full sm:w-auto" id="contact-submit">
+        <span data-submit-label>{f.submit}</span>
+      </Button>
+      <p class="text-xs leading-relaxed text-subtle">
+        {f.privacyNote}
+        <a href={routePath("privacy", lang)} class="font-semibold text-brand-ink underline">{f.privacyLink}</a>.
+      </p>
+    </div>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById("contact-form-el") as HTMLFormElement | null;
+  const submitButton = document.getElementById("contact-submit") as HTMLButtonElement | null;
+  const submitLabel = submitButton?.querySelector("[data-submit-label]");
+  const successBanner = document.getElementById("contact-banner-success");
+  const errorBanner = document.getElementById("contact-banner-error");
+  const idleLabel = submitLabel?.textContent ?? "";
+  const sendingLabel = form?.dataset.sendingLabel ?? "…";
+
+  function showBanner(kind: "success" | "error") {
+    const shown = kind === "success" ? successBanner : errorBanner;
+    const hidden = kind === "success" ? errorBanner : successBanner;
+    hidden?.classList.add("hidden");
+    hidden?.classList.remove("flex");
+    shown?.classList.remove("hidden");
+    shown?.classList.add("flex");
+    shown?.focus();
+    shown?.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (kind === "success") form?.reset();
+  }
+
+  function clearErrors() {
+    form?.querySelectorAll<HTMLElement>("[data-error-for]").forEach((el) => {
+      el.textContent = "";
+      el.classList.add("hidden");
+      const field = form.querySelector(`[name="${el.dataset.errorFor}"]`);
+      field?.removeAttribute("aria-invalid");
+      field?.removeAttribute("aria-describedby");
+    });
+  }
+
+  function setErrors(errors: Record<string, string>) {
+    let firstField: HTMLElement | null = null;
+    for (const [name, message] of Object.entries(errors)) {
+      const el = form?.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+      const field = form?.querySelector<HTMLElement>(`[name="${name}"]`);
+      if (el) {
+        const errorId = `${name}-error`;
+        el.id = errorId;
+        el.textContent = message;
+        el.classList.remove("hidden");
+        field?.setAttribute("aria-invalid", "true");
+        field?.setAttribute("aria-describedby", errorId);
+        if (!firstField && field) firstField = field;
+      }
+    }
+    firstField?.focus();
+  }
+
+  const params = new URLSearchParams(location.search);
+  if (params.has("success")) showBanner("success");
+  if (params.has("error")) showBanner("error");
+  if (params.has("success") || params.has("error")) {
+    history.replaceState(null, "", location.pathname);
+  }
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!submitButton || !submitLabel) return;
+
+    clearErrors();
+    submitButton.disabled = true;
+    submitLabel.textContent = sendingLabel;
+
+    try {
+      const response = await fetch(form.action, {
+        method: "POST",
+        body: new FormData(form),
+        headers: { Accept: "application/json" },
+      });
+      const result = await response.json();
+
+      if (result.success) showBanner("success");
+      else if (result.errors && Object.keys(result.errors).length > 0) setErrors(result.errors);
+      else showBanner("error");
+    } catch {
+      showBanner("error");
+    } finally {
+      submitButton.disabled = false;
+      submitLabel.textContent = idleLabel;
+    }
+  });
+</script>

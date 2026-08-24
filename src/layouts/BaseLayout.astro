@@ -1,0 +1,121 @@
+---
+import "../styles/global.css";
+import type { ResolvedSeo } from "../lib/seo";
+import { faqSchema, organizationSchema, softwareSchema } from "../lib/seo";
+import type { Faq } from "../lib/content/types";
+
+interface Props {
+  seo: ResolvedSeo;
+  /** Emit Organization + SoftwareApplication structured data (home page only). */
+  includeOrgSchema?: boolean;
+  /** When supplied, emits FAQPage structured data. */
+  faqs?: Faq[];
+  /** Opt into the light/dark theme switch. Pages without it stay light. */
+  enableTheme?: boolean;
+  lang?: string;
+  dir?: "ltr" | "rtl";
+  /** Alternate-language versions of this page, for hreflang. */
+  alternates?: { lang: string; path: string }[];
+  skipLabel?: string;
+}
+
+const {
+  seo,
+  includeOrgSchema = false,
+  faqs,
+  enableTheme = false,
+  lang = "en",
+  dir = "ltr",
+  alternates = [],
+  skipLabel = "Skip to main content",
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const siteUrl = Astro.site?.toString();
+const defaultOgImage = new URL("/og-default.svg", Astro.site).toString();
+
+const schemas = [
+  includeOrgSchema ? organizationSchema(siteUrl, seo.description) : null,
+  includeOrgSchema ? softwareSchema(siteUrl, seo.description) : null,
+  faqs ? faqSchema(faqs) : null,
+].filter(Boolean);
+---
+
+<!doctype html>
+<html lang={lang} dir={dir}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/peekaboo-mark.png" />
+    <link rel="apple-touch-icon" href="/peekaboo-mark.png" />
+    <link rel="canonical" href={canonicalURL} />
+    {alternates.map((alt) => (
+      <link rel="alternate" hreflang={alt.lang} href={new URL(alt.path, Astro.site).toString()} />
+    ))}
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#1cb6ea" />
+
+    {enableTheme && (
+      /* Runs before first paint so the correct theme is applied without a
+         flash of the wrong one. Deliberately inline and un-deferred. */
+      <script is:inline>
+        (function () {
+          try {
+            var stored = localStorage.getItem("peekaboo-theme");
+            var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            if (stored === "dark" || (!stored && prefersDark)) {
+              document.documentElement.classList.add("dark");
+            }
+          } catch (e) {
+            /* Storage unavailable — fall back to the light theme. */
+          }
+        })();
+      </script>
+    )}
+
+    <title>{seo.title}</title>
+    {seo.description && <meta name="description" content={seo.description} />}
+    {seo.noIndex && <meta name="robots" content="noindex, nofollow" />}
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={seo.title} />
+    {seo.description && <meta property="og:description" content={seo.description} />}
+    <meta property="og:image" content={seo.ogImageUrl || defaultOgImage} />
+    <meta property="og:site_name" content="Peekaboo" />
+    <meta property="og:locale" content="en" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={seo.title} />
+    {seo.description && <meta name="twitter:description" content={seo.description} />}
+    <meta name="twitter:image" content={seo.ogImageUrl || defaultOgImage} />
+
+    {schemas.map((schema) => (
+      <script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />
+    ))}
+  </head>
+  <body>
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-brand-600 focus:px-5 focus:py-2.5 focus:font-semibold focus:text-white focus:shadow-soft-lg"
+    >
+      {skipLabel}
+    </a>
+
+    <!-- Soft decorative colour, fixed to the viewport — the portal's ambient-orb treatment. -->
+    <div
+      class="pointer-events-none fixed -right-24 top-32 -z-10 h-72 w-72 rounded-full bg-violet/15 opacity-70 blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+    <div
+      class="pointer-events-none fixed -left-28 bottom-32 -z-10 h-64 w-64 rounded-full bg-coral/15 opacity-70 blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+
+    <slot />
+  </body>
+</html>

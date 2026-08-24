@@ -1,0 +1,7 @@
+---
+import LegalPage from "../../components/v2/LegalPage.astro";
+import { termsAr } from "../../lib/legal/terms";
+export const prerender = true;
+---
+
+<LegalPage lang="ar" routeKey="terms" doc={termsAr} />

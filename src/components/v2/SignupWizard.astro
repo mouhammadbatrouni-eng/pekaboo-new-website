@@ -1,0 +1,790 @@
+---
+import Button from "../ui/Button.astro";
+import { CircleAlert, Check, Upload } from "@lucide/astro";
+import { SITE, CTA } from "../../lib/content/site";
+import {
+  FIELD,
+  ROLE_VALUES,
+  INSTITUTION_VALUES,
+  LOCATION_COUNT_VALUES,
+  OBJECTIVE_VALUES,
+  TIMEZONE_OPTIONS,
+  DEFAULT_TIMEZONE,
+  ZONE_ID,
+  FIELD_STEP,
+  TOTAL_STEPS,
+  MAX_LOGO_BYTES,
+} from "../../lib/signup/steps";
+import { SIGNUP_ENDPOINTS, ERROR_KEY_TO_FIELD } from "../../lib/signup/api";
+import type { Dict, Lang } from "../../lib/i18n";
+
+/**
+ * The ten-step signup, posted straight to the portal.
+ *
+ * Every step lives inside one `<form>` and is only hidden when inactive, never
+ * unmounted — so `new FormData(form)` at the end carries all ten steps whether
+ * or not the visitor is still looking at them.
+ */
+interface Props {
+  t: Dict;
+  lang: Lang;
+}
+
+const { t, lang } = Astro.props;
+const s = t.signup;
+const rtl = t.meta.dir === "rtl";
+
+const fieldClass =
+  "w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm text-body placeholder:text-subtle transition-colors focus:border-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-100 aria-[invalid=true]:border-danger";
+const labelClass = "mb-1.5 block text-sm font-semibold text-body";
+const errorClass = "mt-1.5 hidden text-xs font-medium text-danger";
+const legendClass = "font-heading text-2xl text-body sm:text-[1.75rem]";
+
+/** Pill-style answer, used for all four question steps. */
+const choiceClass =
+  "group inline-flex cursor-pointer items-center gap-2.5 rounded-full border border-line bg-surface px-4 py-2.5 text-sm font-semibold text-body transition-all duration-200 hover:border-brand-300 hover:bg-brand-50 has-[:checked]:border-brand-400 has-[:checked]:bg-brand-50 has-[:checked]:text-brand-ink has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand-500";
+const tickClass =
+  "flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-line-strong text-transparent transition-colors group-has-[:checked]:border-brand-500 group-has-[:checked]:bg-brand-500 group-has-[:checked]:text-white";
+
+const stepTitles = [
+  s.steps.role,
+  s.steps.institution,
+  s.steps.locations,
+  s.steps.objectives,
+  s.steps.center,
+  s.steps.contact,
+  s.steps.web,
+  s.steps.location,
+  s.steps.legal,
+  s.steps.appointment,
+];
+
+const QUESTION_STEPS = [
+  { step: 1, name: FIELD.roles, type: "checkbox", question: s.questions.role, values: ROLE_VALUES },
+  { step: 2, name: FIELD.institutions, type: "checkbox", question: s.questions.institution, values: INSTITUTION_VALUES },
+  { step: 3, name: FIELD.locationCount, type: "radio", question: s.questions.locations, values: LOCATION_COUNT_VALUES },
+  { step: 4, name: FIELD.objectives, type: "checkbox", question: s.questions.objectives, values: OBJECTIVE_VALUES },
+] as const;
+
+/** Text fields, so steps 5–9 are a loop rather than fifty lines of markup. */
+const TEXT_STEPS = [
+  {
+    step: 5,
+    title: s.steps.center,
+    fields: [
+      { name: FIELD.centerName, label: s.fields.centerName, type: "text", required: true, autocomplete: "organization" },
+      { name: FIELD.capacity, label: s.fields.capacity, type: "number", required: true },
+      { name: FIELD.enrolled, label: s.fields.enrolled, type: "number", required: true },
+      { name: FIELD.centerDesc, label: s.fields.centerDesc, type: "text", required: false },
+    ],
+  },
+  {
+    step: 6,
+    title: s.steps.contact,
+    fields: [
+      {
+        name: FIELD.contactTitle,
+        label: s.fields.contactTitle,
+        type: "text",
+        required: true,
+        placeholder: s.fields.contactTitlePlaceholder,
+      },
+      { name: FIELD.contactName, label: s.fields.contactName, type: "text", required: true, autocomplete: "name" },
+      { name: FIELD.phone, label: s.fields.phone, type: "tel", required: true, ltr: true, autocomplete: "tel" },
+      { name: FIELD.email, label: s.fields.email, type: "email", required: true, ltr: true, autocomplete: "email" },
+    ],
+  },
+  {
+    step: 7,
+    title: s.steps.web,
+    fields: [
+      { name: FIELD.website, label: s.fields.website, type: "url", required: false, ltr: true },
+      { name: FIELD.facebook, label: s.fields.facebook, type: "url", required: false, ltr: true },
+      { name: FIELD.twitter, label: s.fields.twitter, type: "url", required: false, ltr: true },
+      { name: FIELD.instagram, label: s.fields.instagram, type: "url", required: false, ltr: true },
+      { name: FIELD.youtube, label: s.fields.youtube, type: "url", required: false, ltr: true },
+      { name: FIELD.cloud, label: s.fields.cloud, type: "url", required: false, ltr: true },
+    ],
+  },
+] as const;
+
+const minDate = new Date(Date.now() + 86_400_000).toISOString().slice(0, 10);
+---
+
+<div
+  class="mx-auto w-full max-w-3xl"
+  data-signup
+  data-countries-url={SIGNUP_ENDPOINTS.countries}
+  data-currencies-url={SIGNUP_ENDPOINTS.currencies}
+  data-register-url={SIGNUP_ENDPOINTS.register}
+  data-lang={lang}
+  data-total={String(TOTAL_STEPS)}
+  data-max-logo={String(MAX_LOGO_BYTES)}
+  data-field-steps={JSON.stringify(FIELD_STEP)}
+  data-error-map={JSON.stringify(ERROR_KEY_TO_FIELD)}
+  data-msg-required={s.requiredField}
+  data-msg-choose={s.chooseAtLeastOne}
+  data-msg-email={s.invalidEmail}
+  data-msg-number={s.invalidNumber}
+  data-msg-logo-large={s.logoTooLarge}
+  data-msg-logo-type={s.logoNotImage}
+  data-msg-date={s.dateInPast}
+  data-msg-lookup={s.lookupFailed}
+  data-label-none={s.fields.logoNone}
+  data-submitting-label={s.submitting}
+  data-generic-error={s.submitError}
+  data-done-template={s.done.body("{email}")}
+  data-handoff-title={s.done.handoffTitle}
+  data-handoff-template={s.done.handoffBody("{email}")}
+>
+  {/* Progress. Purely a summary of the live region below it. */}
+  <ol
+    class="mb-8 flex flex-wrap items-center gap-1.5"
+    aria-label={s.progressLabel}
+    data-progress
+  >
+    {stepTitles.map((title, index) => (
+      <li
+        data-dot={index + 1}
+        class="h-1.5 flex-1 rounded-full bg-line-strong transition-colors duration-300"
+        aria-current={index === 0 ? "step" : undefined}
+      >
+        <span class="sr-only">{title}</span>
+      </li>
+    ))}
+  </ol>
+
+  <p class="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-ink" data-step-counter>
+    {s.stepOf(1, TOTAL_STEPS)}
+  </p>
+  <p class="sr-only" role="status" aria-live="polite" data-announcer></p>
+
+  <div
+    class="mb-6 hidden items-start gap-3 rounded-xl border border-danger/20 bg-danger-soft px-5 py-4 text-sm text-danger"
+    role="alert"
+    tabindex="-1"
+    data-banner
+  >
+    <CircleAlert size={20} class="mt-0.5 shrink-0" aria-hidden="true" />
+    <p>
+      <span data-banner-text>{s.submitError}</span>{" "}
+      <a href={`mailto:${s.done.helpEmail}`} class="font-bold underline" dir="ltr">{s.done.helpEmail}</a>.
+    </p>
+  </div>
+
+  <form
+    class="rounded-2xl border border-line bg-surface p-6 shadow-soft sm:p-8"
+    data-signup-form
+    novalidate
+  >
+    {/* Never populated by the live portal either — it wants the literal 0. */}
+    <input type="hidden" name={FIELD.zone} value={ZONE_ID} />
+
+    {QUESTION_STEPS.map(({ step, name, type, question, values }) => (
+      <fieldset data-step={step} hidden={step !== 1}>
+        <legend class="contents">
+          <h2 class={legendClass} tabindex="-1" data-step-heading>{question}</h2>
+        </legend>
+        {step === 4 && <p class="mt-2 text-sm text-muted">{s.questions.objectivesHint}</p>}
+
+        <div class="mt-6 flex flex-wrap gap-2.5">
+          {values.map((value) => (
+            <label class={choiceClass}>
+              <input type={type} name={name} value={value} class="sr-only" />
+              <span class={tickClass} aria-hidden="true">
+                <Check size={11} stroke-width={4} />
+              </span>
+              {s.choices[value]}
+            </label>
+          ))}
+        </div>
+        <p class={errorClass} data-error-for={name}></p>
+      </fieldset>
+    ))}
+
+    {TEXT_STEPS.map(({ step, title, fields }) => (
+      <fieldset data-step={step} hidden>
+        <legend class="contents">
+          <h2 class={legendClass} tabindex="-1" data-step-heading>{title}</h2>
+        </legend>
+
+        <div class="mt-6 grid gap-5 sm:grid-cols-2">
+          {fields.map((field) => (
+            <div>
+              <label for={field.name} class={labelClass}>
+                {field.label}
+                {field.required ? (
+                  <span class="text-danger"> *</span>
+                ) : (
+                  <span class="font-normal text-subtle"> {s.optional}</span>
+                )}
+              </label>
+              <input
+                type={field.type}
+                id={field.name}
+                name={field.name}
+                class={fieldClass}
+                data-required={field.required ? "true" : undefined}
+                placeholder={"placeholder" in field ? field.placeholder : undefined}
+                autocomplete={"autocomplete" in field ? field.autocomplete : undefined}
+                dir={"ltr" in field ? "ltr" : undefined}
+                inputmode={field.type === "number" ? "numeric" : undefined}
+                min={field.type === "number" ? "0" : undefined}
+              />
+              <p class={errorClass} data-error-for={field.name}></p>
+            </div>
+          ))}
+        </div>
+        <p class="mt-5 text-xs text-subtle">{s.mandatoryNote}</p>
+      </fieldset>
+    ))}
+
+    {/* Step 8 — location. Country and currency are filled from the portal. */}
+    <fieldset data-step="8" hidden>
+      <legend class="contents">
+        <h2 class={legendClass} tabindex="-1" data-step-heading>{s.steps.location}</h2>
+      </legend>
+
+      <div class="mt-6 grid gap-5 sm:grid-cols-2">
+        <div>
+          <label for={FIELD.country} class={labelClass}>
+            {s.fields.country}<span class="text-danger"> *</span>
+          </label>
+          <select id={FIELD.country} name={FIELD.country} class={fieldClass} data-required="true" data-remote="countries" disabled>
+            <option value="">{s.loading}</option>
+          </select>
+          <p class={errorClass} data-error-for={FIELD.country}></p>
+        </div>
+        <div>
+          <label for={FIELD.currency} class={labelClass}>
+            {s.fields.currency}<span class="text-danger"> *</span>
+          </label>
+          <select id={FIELD.currency} name={FIELD.currency} class={fieldClass} data-required="true" data-remote="currencies" disabled>
+            <option value="">{s.loading}</option>
+          </select>
+          <p class={errorClass} data-error-for={FIELD.currency}></p>
+        </div>
+        <div>
+          <label for={FIELD.timezone} class={labelClass}>
+            {s.fields.timezone}<span class="text-danger"> *</span>
+          </label>
+          <select id={FIELD.timezone} name={FIELD.timezone} class={fieldClass} data-required="true">
+            {TIMEZONE_OPTIONS.map((zone) => (
+              <option value={zone.value} selected={zone.value === DEFAULT_TIMEZONE}>{zone.label}</option>
+            ))}
+          </select>
+          <p class={errorClass} data-error-for={FIELD.timezone}></p>
+        </div>
+        <div>
+          <label for={FIELD.address} class={labelClass}>
+            {s.fields.address} <span class="font-normal text-subtle">{s.optional}</span>
+          </label>
+          <input type="text" id={FIELD.address} name={FIELD.address} class={fieldClass} autocomplete="street-address" />
+        </div>
+      </div>
+
+      <div class="mt-5">
+        <label for={FIELD.logo} class={labelClass}>
+          {s.fields.logo}<span class="text-danger"> *</span>
+        </label>
+        <div class="flex flex-wrap items-center gap-3">
+          <label
+            class="inline-flex cursor-pointer items-center gap-2 rounded-full border border-line bg-surface px-4 py-2.5 text-sm font-semibold text-body transition-colors hover:border-brand-300 hover:bg-brand-50 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand-500"
+          >
+            <Upload size={15} aria-hidden="true" />
+            {s.fields.logoChoose}
+            <input
+              type="file"
+              id={FIELD.logo}
+              name={FIELD.logo}
+              accept="image/*"
+              class="sr-only"
+              data-required="true"
+            />
+          </label>
+          <span class="text-sm text-subtle" data-logo-name>{s.fields.logoNone}</span>
+        </div>
+        <p class="mt-1.5 text-xs text-subtle">{s.fields.logoHint}</p>
+        <p class={errorClass} data-error-for={FIELD.logo}></p>
+      </div>
+      <p class="mt-5 text-xs text-subtle">{s.mandatoryNote}</p>
+    </fieldset>
+
+    {/* Step 9 — legal. */}
+    <fieldset data-step="9" hidden>
+      <legend class="contents">
+        <h2 class={legendClass} tabindex="-1" data-step-heading>{s.steps.legal}</h2>
+      </legend>
+      <div class="mt-6 sm:max-w-sm">
+        <label for={FIELD.vat} class={labelClass}>
+          {s.fields.vat} <span class="font-normal text-subtle">{s.optional}</span>
+        </label>
+        <input type="text" id={FIELD.vat} name={FIELD.vat} class={fieldClass} dir="ltr" />
+        <p class={errorClass} data-error-for={FIELD.vat}></p>
+      </div>
+    </fieldset>
+
+    {/* Step 10 — appointment. */}
+    <fieldset data-step="10" hidden>
+      <legend class="contents">
+        <h2 class={legendClass} tabindex="-1" data-step-heading>{s.steps.appointment}</h2>
+      </legend>
+      <p class="mt-2 text-sm leading-relaxed text-muted">{s.questions.appointment}</p>
+      <div class="mt-6 sm:max-w-xs">
+        <label for={FIELD.appointment} class={labelClass}>
+          {s.fields.appointmentDate}<span class="text-danger"> *</span>
+        </label>
+        <input
+          type="date"
+          id={FIELD.appointment}
+          name={FIELD.appointment}
+          class={fieldClass}
+          data-required="true"
+          min={minDate}
+          dir="ltr"
+        />
+        <p class={errorClass} data-error-for={FIELD.appointment}></p>
+      </div>
+    </fieldset>
+
+    {/* Each button is wrapped, because Button's own `inline-flex` outranks a
+        `hidden` passed through its class — the wrapper carries visibility. */}
+    <div class="mt-8 flex items-center justify-between gap-3 border-t border-line pt-6">
+      <span class="invisible" data-back-wrap>
+        <Button type="button" variant="secondary" data-back>{s.back}</Button>
+      </span>
+      <span data-next-wrap>
+        <Button type="button" data-next>{s.next}</Button>
+      </span>
+      <span class="hidden" data-finish-wrap>
+        <Button type="submit" data-finish>
+          <span data-finish-label>{s.finish}</span>
+        </Button>
+      </span>
+    </div>
+  </form>
+
+  {/* Replaces the form once the portal confirms the account. */}
+  <div
+    class="hidden rounded-2xl border border-line bg-surface p-8 text-center shadow-soft sm:p-12"
+    role="status"
+    tabindex="-1"
+    data-done
+  >
+    <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-mint-soft text-success">
+      <Check size={26} stroke-width={3} aria-hidden="true" />
+    </span>
+    <h2 class="mt-6 font-heading text-2xl text-body sm:text-3xl" data-done-title>{s.done.title}</h2>
+    <p class="mt-3 leading-relaxed text-muted" data-done-body></p>
+    <div class="mt-8 flex justify-center" data-signin-wrap>
+      <Button href={CTA.signIn.href} size="lg" target="_blank" rel="noopener">{s.done.signIn}</Button>
+    </div>
+    <p class="mt-8 text-sm leading-relaxed text-subtle">
+      {s.done.helpBefore}{" "}
+      <a href={`mailto:${s.done.helpEmail}`} class="font-semibold text-brand-ink underline" dir="ltr">
+        {s.done.helpEmail}
+      </a>{" "}
+      {s.done.helpAfter}
+    </p>
+  </div>
+</div>
+
+<script>
+  const wizard = document.querySelector<HTMLElement>("[data-signup]");
+  const wizardForm = wizard?.querySelector<HTMLFormElement>("[data-signup-form]");
+
+  if (wizard && wizardForm) {
+    // Re-bound so the helpers below don't each have to re-prove non-nullness.
+    const root = wizard;
+    const form = wizardForm;
+    const d = root.dataset;
+    const total = Number(d.total);
+    const fieldSteps: Record<string, number> = JSON.parse(d.fieldSteps ?? "{}");
+    const errorMap: Record<string, string> = JSON.parse(d.errorMap ?? "{}");
+    const isArabic = d.lang === "ar";
+
+    const steps = Array.from(form.querySelectorAll<HTMLFieldSetElement>("[data-step]"));
+    const dots = Array.from(root.querySelectorAll<HTMLElement>("[data-dot]"));
+    const counter = root.querySelector<HTMLElement>("[data-step-counter]");
+    const announcer = root.querySelector<HTMLElement>("[data-announcer]");
+    const banner = root.querySelector<HTMLElement>("[data-banner]");
+    const bannerText = root.querySelector<HTMLElement>("[data-banner-text]");
+    const done = root.querySelector<HTMLElement>("[data-done]");
+    const doneBody = root.querySelector<HTMLElement>("[data-done-body]");
+    const backBtn = form.querySelector<HTMLButtonElement>("[data-back]");
+    const nextBtn = form.querySelector<HTMLButtonElement>("[data-next]");
+    const finishBtn = form.querySelector<HTMLButtonElement>("[data-finish]");
+    const finishLabel = form.querySelector<HTMLElement>("[data-finish-label]");
+    const backWrap = form.querySelector<HTMLElement>("[data-back-wrap]");
+    const nextWrap = form.querySelector<HTMLElement>("[data-next-wrap]");
+    const finishWrap = form.querySelector<HTMLElement>("[data-finish-wrap]");
+
+    const counterTemplate = counter?.textContent ?? "";
+    const idleFinish = finishLabel?.textContent ?? "";
+    let current = 1;
+
+    /** Rebuilds "Step 3 of 10" from the server-rendered first step. */
+    function stepLabel(index: number) {
+      return counterTemplate.replace(/\d+/, String(index));
+    }
+
+    function fieldsOf(step: number) {
+      const set = steps.find((el) => el.dataset.step === String(step));
+      return Array.from(set?.querySelectorAll<HTMLElement>("[name]") ?? []);
+    }
+
+    function clearErrors(step?: number) {
+      const scope = step ? steps.find((el) => el.dataset.step === String(step)) : form;
+      scope?.querySelectorAll<HTMLElement>("[data-error-for]").forEach((el) => {
+        el.textContent = "";
+        el.classList.add("hidden");
+        form
+          .querySelectorAll(`[name="${CSS.escape(el.dataset.errorFor ?? "")}"]`)
+          .forEach((f) => {
+            f.removeAttribute("aria-invalid");
+            f.removeAttribute("aria-describedby");
+          });
+      });
+    }
+
+    function setError(name: string, message: string) {
+      const el = form.querySelector<HTMLElement>(`[data-error-for="${CSS.escape(name)}"]`);
+      if (!el) return;
+      const id = `err-${name.replace(/\W/g, "-")}`;
+      el.id = id;
+      el.textContent = message;
+      el.classList.remove("hidden");
+      const field = form.querySelector(`[name="${CSS.escape(name)}"]`);
+      field?.setAttribute("aria-invalid", "true");
+      field?.setAttribute("aria-describedby", id);
+    }
+
+    /** Falls back to our own wording when the portal gives no message. */
+    function showBanner(message?: string) {
+      if (!banner) return;
+      if (bannerText) bannerText.textContent = message || d.genericError || "";
+      banner.classList.remove("hidden");
+      banner.classList.add("flex");
+      banner.focus();
+    }
+
+    function hideBanner() {
+      banner?.classList.add("hidden");
+      banner?.classList.remove("flex");
+    }
+
+    function validate(step: number): boolean {
+      clearErrors(step);
+      let ok = true;
+      let firstBad: HTMLElement | null = null;
+
+      // Question steps: a group of checkboxes/radios sharing one name.
+      const groups = new Map<string, HTMLInputElement[]>();
+      for (const el of fieldsOf(step)) {
+        const input = el as HTMLInputElement;
+        if (input.type === "checkbox" || input.type === "radio") {
+          const list = groups.get(input.name) ?? [];
+          list.push(input);
+          groups.set(input.name, list);
+        }
+      }
+      for (const [name, inputs] of groups) {
+        if (!inputs.some((i) => i.checked)) {
+          setError(name, d.msgChoose ?? "");
+          ok = false;
+          firstBad ??= inputs[0];
+        }
+      }
+
+      for (const el of fieldsOf(step)) {
+        const input = el as HTMLInputElement;
+        if (input.type === "checkbox" || input.type === "radio" || input.type === "hidden") continue;
+        const value = input.value.trim();
+        const required = input.dataset.required === "true";
+
+        if (required && input.type === "file" && input.files?.length === 0) {
+          setError(input.name, d.msgRequired ?? "");
+          ok = false;
+          firstBad ??= input;
+          continue;
+        }
+        if (input.type === "file") {
+          const file = input.files?.[0];
+          if (file && !file.type.startsWith("image/")) {
+            setError(input.name, d.msgLogoType ?? "");
+            ok = false;
+            firstBad ??= input;
+          } else if (file && file.size > Number(d.maxLogo)) {
+            setError(input.name, d.msgLogoLarge ?? "");
+            ok = false;
+            firstBad ??= input;
+          }
+          continue;
+        }
+
+        if (required && !value) {
+          setError(input.name, d.msgRequired ?? "");
+          ok = false;
+          firstBad ??= input;
+          continue;
+        }
+        if (!value) continue;
+
+        if (input.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          setError(input.name, d.msgEmail ?? "");
+          ok = false;
+          firstBad ??= input;
+        }
+        if (input.type === "number" && !/^\d+$/.test(value)) {
+          setError(input.name, d.msgNumber ?? "");
+          ok = false;
+          firstBad ??= input;
+        }
+        if (input.type === "date" && input.min && value < input.min) {
+          setError(input.name, d.msgDate ?? "");
+          ok = false;
+          firstBad ??= input;
+        }
+      }
+
+      if (!ok) (firstBad as HTMLElement | null)?.focus();
+      return ok;
+    }
+
+    /**
+     * `quiet` is for the initial paint: the progress bar and buttons need
+     * setting up, but stealing focus and scrolling on page load would be
+     * hostile.
+     */
+    function show(step: number, quiet = false) {
+      current = step;
+      for (const set of steps) set.hidden = set.dataset.step !== String(step);
+
+      dots.forEach((dot, i) => {
+        const index = i + 1;
+        dot.classList.toggle("bg-brand-500", index <= step);
+        dot.classList.toggle("bg-line-strong", index > step);
+        if (index === step) dot.setAttribute("aria-current", "step");
+        else dot.removeAttribute("aria-current");
+      });
+
+      if (counter) counter.textContent = stepLabel(step);
+      backWrap?.classList.toggle("invisible", step === 1);
+      nextWrap?.classList.toggle("hidden", step === total);
+      finishWrap?.classList.toggle("hidden", step !== total);
+
+      if (quiet) return;
+
+      const heading = steps
+        .find((el) => el.dataset.step === String(step))
+        ?.querySelector<HTMLElement>("[data-step-heading]");
+      heading?.focus();
+      if (announcer && heading) announcer.textContent = `${stepLabel(step)} — ${heading.textContent}`;
+      root.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    show(1, true);
+
+    nextBtn?.addEventListener("click", () => {
+      hideBanner();
+      if (validate(current)) show(Math.min(current + 1, total));
+    });
+    backBtn?.addEventListener("click", () => {
+      hideBanner();
+      show(Math.max(current - 1, 1));
+    });
+
+    // Enter shouldn't submit from step 3 — advance instead.
+    form.addEventListener("keydown", (event) => {
+      const target = event.target as HTMLElement;
+      if (event.key !== "Enter" || target.tagName === "TEXTAREA") return;
+      if (current !== total) {
+        event.preventDefault();
+        nextBtn?.click();
+      }
+    });
+
+    const logo = form.querySelector<HTMLInputElement>('input[type="file"]');
+    const logoName = form.querySelector<HTMLElement>("[data-logo-name]");
+    logo?.addEventListener("change", () => {
+      if (logoName) logoName.textContent = logo.files?.[0]?.name ?? d.labelNone ?? "";
+    });
+
+    /**
+     * Country and currency come from the portal. Fetched on load rather than on
+     * reaching step 8, so the lists are ready before anyone gets there — and if
+     * the portal is unreachable the select becomes a plain text input instead of
+     * a dead end.
+     */
+    async function fillSelect(
+      select: HTMLSelectElement,
+      url: string,
+      toOption: (row: any) => { value: string; label: string },
+    ) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(String(response.status));
+        const rows = (await response.json()) as unknown[];
+        select.innerHTML = "";
+        select.append(new Option("", ""));
+        for (const row of rows) {
+          const { value, label } = toOption(row);
+          select.append(new Option(label, value));
+        }
+        select.disabled = false;
+      } catch {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.name = select.name;
+        input.id = select.id;
+        input.className = select.className;
+        input.dataset.required = select.dataset.required ?? "";
+        select.replaceWith(input);
+        const hint = document.createElement("p");
+        hint.className = "mt-1.5 text-xs text-warning";
+        hint.textContent = d.msgLookup ?? "";
+        input.after(hint);
+      }
+    }
+
+    const countrySelect = form.querySelector<HTMLSelectElement>('[data-remote="countries"]');
+    const currencySelect = form.querySelector<HTMLSelectElement>('[data-remote="currencies"]');
+    if (countrySelect && d.countriesUrl) {
+      fillSelect(countrySelect, d.countriesUrl, (row) => ({
+        value: String(row.country_id),
+        label: String(isArabic && row.name_ar ? row.name_ar : row.name_en).trim(),
+      }));
+    }
+    if (currencySelect && d.currenciesUrl) {
+      fillSelect(currencySelect, d.currenciesUrl, (row) => ({
+        value: String(row.currencycode).trim(),
+        label: `${String(row.currencycode).trim()} — ${String(row.countryname).trim()}`,
+      }));
+    }
+
+    /** Swaps the form out for the closing screen. */
+    function showDone(email: string, handedOff = false) {
+      if (doneBody) {
+        const template = handedOff ? d.handoffTemplate : d.doneTemplate;
+        doneBody.textContent = (template ?? "").replace("{email}", email);
+      }
+      const title = root.querySelector<HTMLElement>("[data-done-title]");
+      if (title && handedOff) title.textContent = d.handoffTitle ?? title.textContent;
+      // No account was created on the hand-off path, so don't send anyone to a
+      // login screen they can't get through.
+      root.querySelector("[data-signin-wrap]")?.classList.toggle("hidden", handedOff);
+
+      form.classList.add("hidden");
+      root.querySelector("[data-progress]")?.classList.add("hidden");
+      counter?.classList.add("hidden");
+      hideBanner();
+      done?.classList.remove("hidden");
+      done?.focus();
+    }
+
+    /**
+     * The portal refused for a reason this form can't act on. Rather than lose
+     * ten steps of work, send the same answers to our own contact endpoint so
+     * the team can follow up by hand, and say so plainly.
+     */
+    async function handOff(payload: FormData) {
+      const get = (n: string) => String(payload.get(n) ?? "").trim();
+      const list = (n: string) => payload.getAll(n).map(String).filter(Boolean);
+      const email = get("Centers[email1]");
+
+      const lines = [
+        "Submitted through the signup wizard — the portal rejected the registration, so this needs setting up by hand.",
+        "",
+        `Center: ${get("Centers[center_name]")}`,
+        `Capacity: ${get("Centers[allowed_capacity]")} · Enrolled: ${get("cp_enrolled_count")}`,
+        `Role: ${list("cp_roles[]").join(", ")}`,
+        `Institution: ${list("cp_institutions[]").join(", ")}`,
+        `Locations: ${get("cp_location_count")}`,
+        `Objectives: ${list("cp_objectives[]").join("; ")}`,
+        `Country id: ${get("Centers[country_id]")} · Currency: ${get("Centers[currencycode]")} · GMT: ${get("Centers[center_timezone]")}`,
+        `Address: ${get("Centers[address]")}`,
+        `Website: ${get("Centers[urlwww]")}`,
+        `VAT/TRN: ${get("Centers[vat_num]")}`,
+        `Requested call: ${get("cp_appointment_date")}`,
+      ];
+
+      const body = new FormData();
+      body.append("name", get("Centers[contact_name]"));
+      body.append("email", email);
+      body.append("organisation", get("Centers[center_name]"));
+      body.append("phone", get("Centers[phone1]"));
+      body.append("message", lines.join("\n"));
+
+      try {
+        const res = await fetch("/api/contact", {
+          method: "POST",
+          body,
+          headers: { Accept: "application/json" },
+        });
+        const json = await res.json();
+        if (json?.success) showDone(email, true);
+        else showBanner();
+      } catch {
+        showBanner();
+      }
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      hideBanner();
+      if (!validate(current)) return;
+      if (!finishBtn || !finishLabel) return;
+
+      finishBtn.disabled = true;
+      finishLabel.textContent = d.submittingLabel ?? finishLabel.textContent;
+
+      try {
+        const payload = new FormData(form);
+        const response = await fetch(d.registerUrl!, { method: "POST", body: payload });
+        const result = await response.json();
+
+        if (result?.type) {
+          showDone(String(payload.get("Centers[email1]") ?? ""));
+          return;
+        }
+
+        const errors = result?.data;
+        if (errors && typeof errors === "object" && Object.keys(errors).length > 0) {
+          clearErrors();
+          let lowest = total + 1;
+          // Anything the portal complains about that has no field on this form —
+          // it must still be shown, or a rejected signup looks like a dead
+          // button.
+          const orphans: string[] = [];
+
+          for (const [key, messages] of Object.entries(errors)) {
+            const name = errorMap[key] ?? key;
+            const message = Array.isArray(messages) ? messages.join(" ") : String(messages);
+            const step = fieldSteps[name];
+            if (form.querySelector(`[data-error-for="${CSS.escape(name)}"]`) && step) {
+              setError(name, message);
+              if (step < lowest) lowest = step;
+            } else {
+              orphans.push(message);
+            }
+          }
+
+          if (lowest <= total) {
+            show(lowest);
+            form.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+          }
+          // Nothing we can point at a field: the portal refused for a reason
+          // this form can't fix. Don't make the visitor eat ten steps of work.
+          if (lowest > total) await handOff(payload);
+        } else {
+          await handOff(payload);
+        }
+      } catch {
+        await handOff(new FormData(form));
+      } finally {
+        finishBtn.disabled = false;
+        finishLabel.textContent = idleFinish;
+      }
+    });
+  }
+</script>

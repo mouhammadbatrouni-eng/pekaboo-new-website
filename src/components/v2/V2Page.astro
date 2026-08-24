@@ -1,0 +1,127 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import StickyNav from "./StickyNav.astro";
+import Hero from "./Hero.astro";
+import Plans from "./Plans.astro";
+import Bridge from "./Bridge.astro";
+import AppStory from "./AppStory.astro";
+import Features from "./Features.astro";
+import Improve from "./Improve.astro";
+import About from "./About.astro";
+import WhyUs from "./WhyUs.astro";
+import Curriculum from "./Curriculum.astro";
+import Faq from "./Faq.astro";
+import Contact from "./Contact.astro";
+import Footer from "./Footer.astro";
+import WhatsAppFab from "./WhatsAppFab.astro";
+import ChatWidget from "./ChatWidget.astro";
+import { getDict, alternatesFor, type Lang } from "../../lib/i18n";
+import { getSiteSettings } from "../../lib/sanity/queries";
+import { resolveSeo } from "../../lib/seo";
+
+/**
+ * The single-page concept, rendered once per language. Both language routes
+ * are thin wrappers around this so the two versions can never drift apart
+ * structurally — only the dictionary changes.
+ */
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = getDict(lang);
+const rtl = t.meta.dir === "rtl";
+
+const site = await getSiteSettings();
+const seo = resolveSeo("Home", { metaTitle: t.meta.title, metaDescription: t.meta.description }, site);
+
+const alternates = alternatesFor("home");
+---
+
+<BaseLayout
+  seo={seo}
+  includeOrgSchema
+  faqs={t.faq.items}
+  enableTheme
+  lang={lang}
+  dir={t.meta.dir}
+  alternates={alternates}
+  skipLabel={t.common.skipToContent}
+>
+  <StickyNav t={t} lang={lang} routeKey="home" />
+
+  <main id="main-content">
+    <Hero t={t} lang={lang} rtl={rtl} />
+    <Plans t={t} rtl={rtl} />
+
+    <Bridge text={t.bridges.toApp} />
+    <AppStory t={t} rtl={rtl} />
+
+    <Bridge text={t.bridges.toFeatures} />
+    <Features t={t} rtl={rtl} lang={lang} />
+
+    <Bridge text={t.bridges.toImprove} />
+    <Improve t={t} rtl={rtl} />
+
+    <About t={t} />
+    <WhyUs t={t} />
+    <Curriculum t={t} lang={lang} />
+    <Faq t={t} />
+    <Contact t={t} lang={lang} />
+  </main>
+
+  <Footer t={t} rtl={rtl} lang={lang} isHome />
+  <WhatsAppFab t={t} />
+  <ChatWidget t={t} lang={lang} />
+</BaseLayout>
+
+<script>
+  // Scroll reveal. The hidden state is only applied once we know we can
+  // observe and un-hide, so no-JS visitors and older browsers see everything.
+  const reveals = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
+
+  if (reveals.length > 0 && "IntersectionObserver" in window) {
+    document.documentElement.setAttribute("data-reveal-ready", "");
+
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const el = entry.target as HTMLElement;
+          el.style.transitionDelay = `${Number(el.dataset.revealDelay ?? 0)}ms`;
+          el.classList.add("is-revealed");
+          obs.unobserve(el);
+        }
+      },
+      { rootMargin: "0px 0px -12% 0px", threshold: 0.05 },
+    );
+
+    for (const el of reveals) observer.observe(el);
+
+    /**
+     * Reveals anything at or above the fold without waiting for a scroll.
+     * The page can arrive already scrolled — an anchor link, a restored
+     * position, or a reload partway down — which would otherwise leave
+     * content at opacity 0 until the visitor happened to scroll.
+     */
+    function sweep() {
+      for (const el of reveals) {
+        if (el.classList.contains("is-revealed")) continue;
+        if (el.getBoundingClientRect().top < window.innerHeight) {
+          el.classList.add("is-revealed");
+          observer.unobserve(el);
+        }
+      }
+    }
+
+    requestAnimationFrame(sweep);
+    window.addEventListener("load", sweep);
+    window.addEventListener("hashchange", () => requestAnimationFrame(sweep));
+
+    // Last-resort guarantee: content must never stay invisible because an
+    // animation hook didn't fire.
+    setTimeout(() => {
+      for (const el of reveals) el.classList.add("is-revealed");
+    }, 4000);
+  }
+</script>

@@ -1,0 +1,39 @@
+---
+import Container from "../ui/Container.astro";
+import ScrollSection from "./ScrollSection.astro";
+import SectionIntro from "./SectionIntro.astro";
+import type { Dict } from "../../lib/i18n";
+
+interface Props {
+  t: Dict;
+}
+
+const { t } = Astro.props;
+---
+
+<ScrollSection id="about" label={t.nav.about} surface="tint">
+  <Container>
+    <SectionIntro
+      id="about-heading"
+      step="05"
+      eyebrow={t.about.eyebrow}
+      title={t.about.heading}
+      description={t.about.body}
+    />
+
+    <div class="mx-auto mt-12 max-w-3xl" data-reveal>
+      <p class="text-center text-xs font-bold uppercase tracking-[0.12em] text-subtle">
+        {t.about.usedBy}
+      </p>
+      <ul class="mt-5 flex flex-wrap justify-center gap-2.5">
+        {t.about.audiences.map((audience) => (
+          <li class="rounded-full border border-line bg-surface px-4 py-2 text-sm font-semibold text-body shadow-soft">
+            {audience}
+          </li>
+        ))}
+      </ul>
+      <p class="mt-8 text-center leading-relaxed text-muted">{t.about.closing}</p>
+      <p class="mt-6 text-center text-sm text-subtle">{t.about.builtBy}</p>
+    </div>
+  </Container>
+</ScrollSection>
