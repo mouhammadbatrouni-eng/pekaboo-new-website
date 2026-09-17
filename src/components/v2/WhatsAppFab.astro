@@ -10,8 +10,12 @@ import type { Dict } from "../../lib/i18n";
  * and center owners actually reply on, so it needs to be reachable from any
  * scroll position rather than only after the whole story has been read.
  *
- * Anchored with `end-*` rather than `right-*` so it moves to the left edge on
- * the Arabic (RTL) page automatically.
+ * Anchored with the physical `left-*` rather than the logical `end-*`, which is
+ * what it used before the hosted chat widget landed. That widget's launcher is
+ * configured `bottom-right` and pins itself with a physical `right:` that does
+ * not flip for RTL, so a logical `end-*` here would sit clear of it in English
+ * and land on top of it in Arabic. Staying physically left keeps the two on
+ * opposite corners in both languages. Revisit if the launcher moves.
  */
 interface Props {
   t: Dict;
@@ -24,7 +28,7 @@ const { t } = Astro.props;
   href={SITE.whatsappUrl}
   target="_blank"
   rel="noopener noreferrer"
-  class="group fixed bottom-5 end-5 z-40 inline-flex items-center gap-2.5 rounded-full bg-[#25D366] py-3.5 ps-4 pe-4 text-white shadow-[0_10px_30px_rgba(37,211,102,0.35)] transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 sm:pe-5"
+  class="group fixed bottom-5 left-5 z-40 inline-flex items-center gap-2.5 rounded-full bg-[#25D366] py-3.5 ps-4 pe-4 text-white shadow-[0_10px_30px_rgba(37,211,102,0.35)] transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 sm:pe-5"
   aria-label={t.common.whatsapp}
 >
   {/* Inline mark: the icon set in use has no WhatsApp glyph. */}
