@@ -323,21 +323,4 @@ export interface Dict {
     links: { label: string; href: string }[];
     legal: { privacy: string; terms: string };
   };
-
-  chat: {
-    launcher: string;
-    heading: string;
-    subheading: string;
-    greeting: string;
-    placeholder: string;
-    send: string;
-    close: string;
-    suggestions: [string, string, string];
-    /** Shown when the endpoint is unreachable or returns an error. */
-    error: string;
-    /** Shown on 429 — the visitor is asking faster than the limiter allows. */
-    rateLimited: string;
-    /** Sets expectations: this is a bot, and it can be wrong. */
-    disclaimer: string;
-  };
 }

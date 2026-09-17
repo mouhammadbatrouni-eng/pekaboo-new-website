@@ -14,7 +14,6 @@ import Faq from "./Faq.astro";
 import Contact from "./Contact.astro";
 import Footer from "./Footer.astro";
 import WhatsAppFab from "./WhatsAppFab.astro";
-import ChatWidget from "./ChatWidget.astro";
 import { getDict, alternatesFor, type Lang } from "../../lib/i18n";
 import { getSiteSettings } from "../../lib/sanity/queries";
 import { resolveSeo } from "../../lib/seo";
@@ -72,7 +71,6 @@ const alternates = alternatesFor("home");
 
   <Footer t={t} rtl={rtl} lang={lang} isHome />
   <WhatsAppFab t={t} />
-  <ChatWidget t={t} lang={lang} />
 </BaseLayout>
 
 <script>

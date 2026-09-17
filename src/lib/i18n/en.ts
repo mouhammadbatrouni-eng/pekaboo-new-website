@@ -554,23 +554,4 @@ export const en: Dict = {
     ],
     legal: { privacy: "Privacy & Policy", terms: "Terms & Conditions" },
   },
-
-  chat: {
-    launcher: "Ask about Peekaboo",
-    heading: "Ask about Peekaboo",
-    subheading: "Answers from our team's own material.",
-    greeting:
-      "Hello — ask me anything about Peekaboo: what it does, how centers adopt it, or whether it fits your setting.",
-    placeholder: "Ask a question…",
-    send: "Send",
-    close: "Close chat",
-    suggestions: [
-      "Can it replace the tools we use today?",
-      "Which curriculum frameworks does it support?",
-      "Can we run more than one center?",
-    ],
-    error: "Something went wrong. Please try again, or use the contact form below.",
-    rateLimited: "That's a lot of questions at once — give it a moment and try again.",
-    disclaimer: "AI assistant — it can make mistakes. For anything binding, talk to our team.",
-  },
 };
