@@ -26,7 +26,7 @@ export const OUTCOMES = [
   {
     title: "Families who feel included",
     description:
-      "Parents see their child's day as it's published — meals, nap, mood and moments — instead of waiting for a handover at the door.",
+      "Parents see their child's day as it's published, with meals, nap, mood and moments, instead of waiting for a handover at the door.",
     icon: "communication",
   },
   {
@@ -61,7 +61,7 @@ export const TRANSFORMATION = {
     title: "How most settings run today",
     points: [
       "Attendance on a clipboard, typed up later",
-      "Daily updates written twice — once for the room, once for parents",
+      "Daily updates written twice, once for the room and once for parents",
       "Child allergies and permissions in a folder in the office",
       "Invoices built by hand in a spreadsheet each month",
       "Enquiries tracked in someone's inbox",
@@ -128,19 +128,19 @@ export const LANGUAGES = {
     { name: "English", native: "English", dir: "ltr" },
     { name: "Arabic", native: "العربية", dir: "rtl" },
   ],
-  note: "Peekaboo runs in English and Arabic, and switches the entire interface to right-to-left automatically — for staff and families alike.",
+  note: "Peekaboo runs in English and Arabic, and flips the entire interface to right-to-left on its own, for staff and families alike.",
 };
 
 export const FAQS = [
   {
     question: "Can Peekaboo replace the separate tools we use today?",
     answer:
-      "That's the intent. Attendance, daily reports, curriculum and observations, staff records, invoicing and expenses, and your admissions pipeline all live in one platform — so the spreadsheets, group chats and paper folders can be retired rather than duplicated.",
+      "That's the intent. Attendance, daily reports, curriculum and observations, staff records, invoicing and expenses, and your admissions pipeline all live in one platform, so you can retire the spreadsheets, group chats and paper folders rather than duplicate them.",
   },
   {
     question: "Do parents need to download an app?",
     answer:
-      "Yes — families use the Peekaboo Parent app to see daily reports, moments, announcements and events as they're published. It's available in English and Arabic, with full right-to-left layout.",
+      "Yes. Families use the Peekaboo Parent app to see daily reports, moments, announcements and events as they're published. It's available in English and Arabic, with full right-to-left layout.",
   },
   {
     question: "Which curriculum frameworks does it support?",
@@ -160,6 +160,6 @@ export const FAQS = [
   {
     question: "How is our data protected?",
     answer:
-      "Records are held on secure infrastructure with encrypted storage and scheduled backups, and access is controlled by role — so staff only reach the information their role requires.",
+      "Records are held on secure infrastructure with encrypted storage and scheduled backups, and access is controlled by role, so staff only reach the information their role requires.",
   },
 ];

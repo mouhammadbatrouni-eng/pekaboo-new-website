@@ -18,7 +18,7 @@ export const fallbackHomePage: HomePage = {
   heroEyebrow: SITE.systemName,
   heroHeading: "One platform to run your entire childcare center.",
   heroDescription:
-    "Peekaboo connects classrooms, families, staff and finance in a single system — so your team stops re-entering the same information and starts getting time back.",
+    "Peekaboo connects classrooms, families, staff and finance in a single system, so your team stops re-entering the same information and starts getting time back.",
   heroCtas: [
     {
       label: CTA.primary.label,

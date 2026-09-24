@@ -34,7 +34,7 @@ export const privacyEn: LegalDoc = {
     {
       heading: "Privacy Policy",
       blocks: [
-        { type: "h3", text: "PeekabooEdu — PRIVACY POLICY" },
+        { type: "h3", text: "PeekabooEdu Privacy Policy" },
         { type: "p", text: "Last Revised: 10/8/2026" },
         {
           type: "p",
@@ -216,7 +216,7 @@ export const privacyAr: LegalDoc = {
     {
       heading: "سياسة الخصوصية",
       blocks: [
-        { type: "h3", text: "PeekabooEdu — سياسة الخصوصية" },
+        { type: "h3", text: "سياسة الخصوصية لدى PeekabooEdu" },
         { type: "p", text: "تاريخ آخر مراجعة: ١٠/٨/٢٠٢٦" },
         {
           type: "p",

@@ -579,7 +579,7 @@ const minDate = new Date(Date.now() + 86_400_000).toISOString().slice(0, 10);
         .find((el) => el.dataset.step === String(step))
         ?.querySelector<HTMLElement>("[data-step-heading]");
       heading?.focus();
-      if (announcer && heading) announcer.textContent = `${stepLabel(step)} — ${heading.textContent}`;
+      if (announcer && heading) announcer.textContent = `${stepLabel(step)}: ${heading.textContent}`;
       root.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
@@ -658,7 +658,7 @@ const minDate = new Date(Date.now() + 86_400_000).toISOString().slice(0, 10);
     if (currencySelect && d.currenciesUrl) {
       fillSelect(currencySelect, d.currenciesUrl, (row) => ({
         value: String(row.currencycode).trim(),
-        label: `${String(row.currencycode).trim()} — ${String(row.countryname).trim()}`,
+        label: `${String(row.currencycode).trim()} (${String(row.countryname).trim()})`,
       }));
     }
 
@@ -693,7 +693,7 @@ const minDate = new Date(Date.now() + 86_400_000).toISOString().slice(0, 10);
       const email = get("Centers[email1]");
 
       const lines = [
-        "Submitted through the signup wizard — the portal rejected the registration, so this needs setting up by hand.",
+        "Submitted through the signup wizard. The portal rejected the registration, so this needs setting up by hand.",
         "",
         `Center: ${get("Centers[center_name]")}`,
         `Capacity: ${get("Centers[allowed_capacity]")} · Enrolled: ${get("cp_enrolled_count")}`,

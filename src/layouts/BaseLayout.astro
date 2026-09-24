@@ -67,7 +67,7 @@ const schemas = [
               document.documentElement.classList.add("dark");
             }
           } catch (e) {
-            /* Storage unavailable — fall back to the light theme. */
+            /* Storage unavailable, so fall back to the light theme. */
           }
         })();
       </script>
@@ -104,7 +104,7 @@ const schemas = [
       {skipLabel}
     </a>
 
-    <!-- Soft decorative colour, fixed to the viewport — the portal's ambient-orb treatment. -->
+    {/* Soft decorative colour, fixed to the viewport: the portal's ambient-orb treatment. */}
     <div
       class="pointer-events-none fixed -right-24 top-32 -z-10 h-72 w-72 rounded-full bg-violet/15 opacity-70 blur-3xl"
       aria-hidden="true"

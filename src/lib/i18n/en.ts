@@ -2,9 +2,9 @@ import type { Dict } from "./types";
 
 export const en: Dict = {
   meta: {
-    title: "Peekaboo — everything your childcare center needs, in one platform",
+    title: "Peekaboo | Everything your childcare center needs, in one platform",
     description:
-      "Run your center, support your educators, connect with parents, manage payments and follow every child's journey — all from one connected platform.",
+      "Run your center, support your educators, connect with parents, manage payments and follow every child's journey from one connected platform.",
     dir: "ltr",
   },
 
@@ -41,14 +41,14 @@ export const en: Dict = {
   hero: {
     badge: "Childcare management platform",
     heading: "Everything your childcare center needs. One connected platform.",
-    body: "Run your center, support your educators, connect with parents, manage payments and follow every child's journey — all from one place.",
+    body: "Run your center, support your educators, connect with parents, manage payments and follow every child's journey, all from one place.",
     points: ["A portal for your team", "An app for families", "Built for early years"],
   },
 
   plans: {
     eyebrow: "Plans",
     heading: "Three ways to start with Peekaboo",
-    body: "Every center is different. Pick the one that matches yours — you can always talk it through with us first.",
+    body: "Every center is different. Pick the one that matches yours, or talk it through with us first.",
     mostPopular: "Most popular",
     bestFor: "Best for",
     talkToUs: "Talk to us about this",
@@ -57,7 +57,7 @@ export const en: Dict = {
         id: "use-peekaboo",
         name: "Use Peekaboo",
         description:
-          "Start with the full Peekaboo platform and the modules your setting needs. Nothing to build, nothing to specify — you're running on proven software from day one.",
+          "Start with the full Peekaboo platform and the modules your setting needs. There is nothing to build and nothing to specify, so you run on proven software from day one.",
         bestFor: "Settings that want to be up and running quickly",
         includes: ["Peekaboo Care for your team", "Peekaboo Parent for families", "The modules that fit how you operate"],
       },
@@ -82,19 +82,19 @@ export const en: Dict = {
 
   bridges: {
     toApp: "However you start with Peekaboo, families stay connected to their child's day.",
-    toFeatures: "That's what parents see. Here's what your team works with.",
-    toImprove: "All of which adds up to a different kind of working week.",
+    toFeatures: "Parents see that side. Your team works with this one.",
+    toImprove: "It adds up to a different kind of working week.",
   },
 
   app: {
     eyebrow: "Our App",
     heading: "Families follow the day as it happens",
-    body: "Peekaboo Parent is the mobile half of the platform. Everything in it comes from records your team already keeps — nothing is written twice.",
+    body: "Peekaboo Parent is the mobile half of the platform. Everything in it comes from records your team already keeps, so nothing gets written twice.",
     stepOf: (current, total) => `Step ${current} of ${total}`,
     beats: [
       {
         title: "Daily updates",
-        body: "Photos and moments from the room reach families as they're posted — not at the door, three hours later.",
+        body: "Photos and moments from the room reach families as they're posted, instead of at the door three hours later.",
       },
       {
         title: "Communication",
@@ -111,13 +111,13 @@ export const en: Dict = {
     ],
     languagesTitle: "Built for mixed communities",
     languagesBody:
-      "Peekaboo runs in English and Arabic, and switches the entire interface to right-to-left automatically — for staff and families alike.",
+      "Peekaboo runs in English and Arabic, and flips the entire interface to right-to-left on its own, for staff and families alike.",
   },
 
   features: {
     eyebrow: "Features",
     heading: "What's inside Peekaboo",
-    body: "Three parts carry the product — the portal your team runs on, the app families follow, and the pipeline that fills your places. Everything else supports them.",
+    body: "Three parts carry the product: the portal your team runs on, the app families follow, and the pipeline that fills your places. Everything else supports them.",
     andAround: "And everything around them",
     spotlights: [
       {
@@ -139,7 +139,7 @@ export const en: Dict = {
         id: "parents-children",
         eyebrow: "Parents & children",
         headline: "Families see the day, as it happens",
-        body: "Daily reports, photos and messages reach parents straight from the room — built from the records your team already keeps, not written a second time.",
+        body: "Daily reports, photos and messages reach parents straight from the room, built from the records your team already keeps rather than written a second time.",
         caption: "The daily report in Peekaboo Parent",
         capabilities: [
           "Daily reports",
@@ -154,7 +154,7 @@ export const en: Dict = {
         id: "admissions",
         eyebrow: "Admissions CRM",
         headline: "Turn enquiries into enrolments",
-        body: "Every family that gets in touch is tracked from first contact through tour, waiting list and approval — so no one goes quiet because a callback was forgotten.",
+        body: "You follow every family that gets in touch from first contact through tour, waiting list and approval, so nobody goes quiet because a callback slipped.",
         caption: "The admissions pipeline in Peekaboo Care",
         capabilities: [
           "Lead pipeline",
@@ -182,7 +182,7 @@ export const en: Dict = {
       {
         id: "insights",
         title: "Insights & security",
-        summary: "Know where you stand — and keep records safe.",
+        summary: "Know where you stand, and keep records safe.",
         capabilities: ["Classroom insights", "Health & incidents", "Encrypted storage", "Scheduled backups"],
       },
     ],
@@ -191,7 +191,7 @@ export const en: Dict = {
   improve: {
     eyebrow: "Improve",
     heading: "What actually changes",
-    body: "Most settings aren't short of systems — they're short of one system. This is what usually shifts in the first month.",
+    body: "Most settings have plenty of systems. What they want is one system. This is what usually shifts in the first month.",
     before: "Before Peekaboo",
     after: "With Peekaboo",
     pairs: [
@@ -209,18 +209,18 @@ export const en: Dict = {
   about: {
     eyebrow: "About",
     heading: "Built around the way early-years teams actually work",
-    body: "Peekaboo brings administration, educators, families, children's development, payments and communication together in one connected environment — and stays configurable, because no two settings run the same way.",
+    body: "Peekaboo brings administration, educators, families, children's development, payments and communication together in one connected environment, and it stays configurable, because no two settings run the same way.",
     usedBy: "Used by settings like",
     audiences: ["Nurseries", "Preschools", "Daycare centers", "Kindergartens", "Montessori settings", "Nursery groups"],
     closing:
-      "Whether you run a single room or a group of centers, the same platform adapts — classes, age groups, curriculum frameworks and fee structures are all yours to define.",
+      "Whether you run a single room or a group of centers, the same platform adapts. Classes, age groups, curriculum frameworks and fee structures are all yours to define.",
     builtBy: "Peekaboo is built and supported by Educore Systems & Technologies, based in Dubai.",
   },
 
   whyUs: {
     eyebrow: "Why Us",
     heading: "Why one platform beats five tools",
-    body: "The case for Peekaboo isn't a longer feature list — it's what stops being your problem.",
+    body: "The case for Peekaboo is what stops being your problem.",
     reasons: [
       {
         title: "Everything connected",
@@ -253,7 +253,7 @@ export const en: Dict = {
   curriculum: {
     eyebrow: "Curriculum",
     heading: "Your curriculum. Your framework. Built into Peekaboo.",
-    body: "Peekaboo doesn't impose a curriculum on your setting. You define the learning areas, objectives and attainment levels you work to — then everything else follows that structure.",
+    body: "Peekaboo doesn't impose a curriculum on your setting. You define the learning areas, objectives and attainment levels you work to, and everything else follows that structure.",
     steps: [
       {
         step: "Define",
@@ -278,7 +278,7 @@ export const en: Dict = {
     ],
     frameworksLabel: "Set up by settings working to",
     frameworksNote:
-      "Because you define the framework, Peekaboo can be configured for any of these — or for a structure that's entirely your own.",
+      "Because you define the framework, Peekaboo can be configured for any of these, or for a structure that's entirely your own.",
     plannerCaption:
       "A theme leads to activities, activities map to objectives, and an observation becomes part of the child's journal.",
   },
@@ -291,12 +291,12 @@ export const en: Dict = {
       {
         question: "Can Peekaboo replace the separate tools we use today?",
         answer:
-          "That's the intent. Attendance, daily reports, curriculum and observations, staff records, invoicing and expenses, and your admissions pipeline all live in one platform — so the spreadsheets, group chats and paper folders can be retired rather than duplicated.",
+          "That's the intent. Attendance, daily reports, curriculum and observations, staff records, invoicing and expenses, and your admissions pipeline all live in one platform, so you can retire the spreadsheets, group chats and paper folders rather than duplicate them.",
       },
       {
         question: "Do parents need to download an app?",
         answer:
-          "Yes — families use the Peekaboo Parent app to see daily reports, moments, announcements and events as they're published. It's available in English and Arabic, with full right-to-left layout.",
+          "Yes. Families use the Peekaboo Parent app to see daily reports, moments, announcements and events as they're published. It's available in English and Arabic, with full right-to-left layout.",
       },
       {
         question: "Which curriculum frameworks does it support?",
@@ -316,7 +316,7 @@ export const en: Dict = {
       {
         question: "How is our data protected?",
         answer:
-          "Records are held on secure infrastructure with encrypted storage and scheduled backups, and access is controlled by role — so staff only reach the information their role requires.",
+          "Records are held on secure infrastructure with encrypted storage and scheduled backups, and access is controlled by role, so staff only reach the information their role requires.",
       },
     ],
   },
@@ -355,7 +355,7 @@ export const en: Dict = {
   },
 
   signup: {
-    metaTitle: "Get started — Peekaboo",
+    metaTitle: "Get started with Peekaboo",
     metaDescription:
       "Set up your center on Peekaboo. Ten short steps, then your login details arrive by email.",
     eyebrow: "Get started",
@@ -373,11 +373,11 @@ export const en: Dict = {
     requiredField: "This field is required.",
     invalidEmail: "Enter a valid email address.",
     invalidNumber: "Enter a whole number.",
-    logoTooLarge: "That image is over 4 MB — please choose a smaller one.",
+    logoTooLarge: "That image is over 4 MB. Please choose a smaller one.",
     logoNotImage: "Please choose an image file.",
     dateInPast: "Choose a date from tomorrow onwards.",
     loading: "Loading…",
-    lookupFailed: "We couldn't load the list — please type it instead.",
+    lookupFailed: "We couldn't load the list. Please type it instead.",
     submitError: "We couldn't create your center. Please try again, or email us at",
 
     // Keyed by the English value posted to the portal. In English the map is an
@@ -398,9 +398,9 @@ export const en: Dict = {
       "After School": "After School",
 
       "1": "1",
-      "2-5": "2–5",
-      "6-9": "6–9",
-      "10-14": "10–14",
+      "2-5": "2 to 5",
+      "6-9": "6 to 9",
+      "10-14": "10 to 14",
       "15 or more": "15 or more",
 
       "To improve the communication with parent": "Improve communication with parents",
@@ -470,9 +470,9 @@ export const en: Dict = {
     done: {
       title: "Thank you for signing up with us!",
       body: (email) => `We've sent your username and password to ${email}.`,
-      handoffTitle: "Thank you — we have your details",
+      handoffTitle: "Thank you, we have your details",
       handoffBody: (email) =>
-        `We couldn't finish setting up your center automatically, so our team will do it by hand and email your login details to ${email}. Nothing you entered was lost.`,
+        `We couldn't finish setting up your center automatically, so our team will do it by hand and email your login details to ${email}. We still have everything you entered.`,
       signIn: "Sign in to the portal",
       helpBefore: "Not in your inbox or spam folder? Contact us at",
       helpEmail: "contactus@peekabooedu.com",
@@ -529,14 +529,14 @@ export const en: Dict = {
       appAssessmentReport:
         "The assessment report screen, listing each child's observations by learning area, filtered by class and date.",
     },
-    observationToJournal: "Observation \u2192 Journal",
-    observationQuote: "\u201cNoah checked his seed every morning and told the group it needed water.\u201d",
+    observationToJournal: "Observation → Journal",
+    observationQuote: "“Noah checked his seed every morning and told the group it needed water.”",
     journalTags: ["Added to journal", "Milestone recorded", "Shared with family"],
   },
 
   footer: {
     description:
-      "Peekaboo is a complete management platform for nurseries, preschools and early-years centers. Flexible enough for any setting, easy for your team to use, and backed by people who understand childcare.",
+      "Peekaboo is a complete management platform for nurseries, preschools and early-years centers. It bends to fit how your setting runs, your team can pick it up quickly, and the people behind it know childcare.",
     usefulLinks: "Useful links",
     contactHeading: "Get in touch",
     phoneLabel: "Phone",

@@ -24,7 +24,7 @@ const t = getDict(lang);
 const rtl = t.meta.dir === "rtl";
 
 const site = await getSiteSettings();
-const seo = resolveSeo(doc.title, { metaTitle: `${doc.title} — Peekaboo`, metaDescription: doc.lastUpdated }, site);
+const seo = resolveSeo(doc.title, { metaTitle: `${doc.title} | Peekaboo`, metaDescription: doc.lastUpdated }, site);
 ---
 
 <BaseLayout

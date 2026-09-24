@@ -99,8 +99,8 @@ export const fallbackSiteSettings: SiteSettings = {
   socialLinks: [{ platform: "WhatsApp", url: SITE.whatsappUrl }],
   contactEmail: SITE.email,
   defaultSeo: {
-    metaTitle: "Peekaboo — The nursery operating system",
+    metaTitle: "Peekaboo | The nursery operating system",
     metaDescription:
-      "Peekaboo connects classrooms, families, staff and finance in one platform built for nurseries and early-years centers. Attendance, daily reports, curriculum, billing and admissions — together.",
+      "Peekaboo connects classrooms, families, staff and finance in one platform built for nurseries and early-years centers: attendance, daily reports, curriculum, billing and admissions, together.",
   },
 };
