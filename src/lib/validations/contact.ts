@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const CENTER_COUNT_OPTIONS = ["1", "2–3", "4–10", "More than 10"] as const;
+export const CENTER_COUNT_OPTIONS = ["1", "2 to 3", "4 to 10", "More than 10"] as const;
 
 export const contactSchema = z.object({
   name: z.string().trim().min(2, "Please enter your full name.").max(120),

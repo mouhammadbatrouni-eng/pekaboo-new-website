@@ -24,7 +24,7 @@ async function sendNotification(data: Submission) {
   if (!apiKey || !to) {
     // Not configured (e.g. local dev). Log rather than fail, so the whole form
     // flow stays testable before email delivery is wired up.
-    console.info("[contact] Email not configured — submission received but not sent:", data);
+    console.info("[contact] Email not configured, submission received but not sent:", data);
     return;
   }
 
@@ -32,8 +32,8 @@ async function sendNotification(data: Submission) {
     `Name: ${data.name}`,
     `Email: ${data.email}`,
     `Organisation: ${data.organisation}`,
-    `Phone: ${data.phone || "—"}`,
-    `Centers: ${data.centers || "—"}`,
+    `Phone: ${data.phone || "not given"}`,
+    `Centers: ${data.centers || "not given"}`,
     "",
     data.message,
   ].join("\n");
@@ -45,7 +45,7 @@ async function sendNotification(data: Submission) {
       from: `Peekaboo Website <noreply@peek-a-boo.app>`,
       to,
       reply_to: data.email,
-      subject: `Demo request — ${data.organisation} (${data.name})`,
+      subject: `Demo request: ${data.organisation} (${data.name})`,
       text: lines,
     }),
   });

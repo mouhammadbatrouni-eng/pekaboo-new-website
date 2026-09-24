@@ -18,7 +18,7 @@ export function resolveSeo(pageTitle: string, pageSeo: Seo | undefined, site: Si
   const fallbackTitle = site.defaultSeo?.metaTitle || SITE.name;
   const title =
     pageSeo?.metaTitle ||
-    (pageTitle && pageTitle !== "Home" ? `${pageTitle} — ${SITE.name}` : fallbackTitle);
+    (pageTitle && pageTitle !== "Home" ? `${pageTitle} | ${SITE.name}` : fallbackTitle);
 
   return {
     title,
