@@ -89,8 +89,6 @@ export const TRANSFORMATION = {
  */
 export const CURRICULA = [
   { abbr: "EYFS", name: "Early Years Foundation Stage" },
-  { abbr: "IPC", name: "International Primary Curriculum" },
-  { abbr: "JC", name: "Jolly Curriculum" },
   { abbr: "WSD", name: "Whole School Development" },
   { abbr: "Reggio", name: "Reggio Emilia" },
 ];
@@ -145,7 +143,7 @@ export const FAQS = [
   {
     question: "Which curriculum frameworks does it support?",
     answer:
-      "The curriculum module is framework-agnostic. You define your own learning areas, aspects, objectives and attainment levels, which means it can be set up for EYFS, IPC, Jolly Curriculum, Whole School Development, Reggio Emilia or a framework specific to your setting.",
+      "The curriculum module is framework-agnostic. You define your own learning areas, aspects, objectives and attainment levels, which means it can be set up for EYFS, Whole School Development, Reggio Emilia or a framework specific to your setting.",
   },
   {
     question: "Can we run more than one center?",
