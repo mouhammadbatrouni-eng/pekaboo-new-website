@@ -4,7 +4,7 @@ import Button from "../ui/Button.astro";
 import AccentHeading from "../ui/AccentHeading.astro";
 import PortalFrame from "../product/PortalFrame.astro";
 import PhoneFrame from "../product/PhoneFrame.astro";
-import { ArrowDown, Check } from "@lucide/astro";
+import { ArrowDown, Check, Play } from "@lucide/astro";
 import { routePath, type Dict, type Lang } from "../../lib/i18n";
 
 interface Props {
@@ -92,6 +92,18 @@ const pointAccents = [
             <ArrowDown size={16} aria-hidden="true" />
           </Button>
         </div>
+
+        {/* A quiet pointer to the intro video just below the fold. */}
+        <a
+          href="#watch"
+          class="group mt-5 inline-flex items-center gap-3 rounded-full py-1 pe-3 text-sm font-bold text-body transition-colors hover:text-brand-ink"
+        >
+          <span class="relative flex h-9 w-9 items-center justify-center rounded-full bg-surface text-brand-ink shadow-soft ring-1 ring-brand-200/70 transition-transform duration-200 group-hover:scale-110">
+            <Play size={14} fill="currentColor" class="ms-0.5" aria-hidden="true" />
+          </span>
+          {t.intro.play}
+          <span class="tabular-nums text-muted">{t.intro.duration}</span>
+        </a>
 
         {/* The five-second test: name both halves of the product explicitly. */}
         <ul class="mt-9 flex flex-wrap gap-2.5 text-sm">
