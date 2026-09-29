@@ -45,6 +45,19 @@ export const en: Dict = {
     points: ["A portal for your team", "An app for families", "Built for early years"],
   },
 
+  intro: {
+    eyebrow: "Watch the intro",
+    heading: "Meet Peekaboo. In 45 seconds.",
+    body: "From five scattered tools to one connected platform. Pick a chapter to jump straight to the part that matters to you.",
+    play: "Play the intro",
+    duration: "0:45",
+    chaptersLabel: "Chapters",
+    chapters: ["Meet Peekaboo", "Your center, live", "Families", "Every child's journey", "Admissions", "Billing"],
+    videoLabel: "Peekaboo introduction video",
+    replay: "Watch again",
+    endTitle: "Ready to see it in your center?",
+  },
+
   plans: {
     eyebrow: "Plans",
     heading: "Three ways to start with Peekaboo",

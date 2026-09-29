@@ -52,6 +52,23 @@ export interface Dict {
     points: [string, string, string];
   };
 
+  intro: {
+    eyebrow: string;
+    heading: string;
+    body: string;
+    play: string;
+    /** Spoken length of the video, shown on the play button. */
+    duration: string;
+    chaptersLabel: string;
+    /** One per chapter, in the order of `CHAPTERS` in IntroVideo.astro. */
+    chapters: [string, string, string, string, string, string];
+    videoLabel: string;
+    replay: string;
+    endTitle: string;
+    /** Shown only where the narration isn't in the page's language. */
+    languageNote?: string;
+  };
+
   plans: {
     eyebrow: string;
     heading: string;
