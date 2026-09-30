@@ -1,7 +1,8 @@
 ---
-import { Image } from "astro:assets";
+import AnimatedShot from "./AnimatedShot.astro";
 import PortalFrameChrome from "./PortalFrameChrome.astro";
 import { PORTAL_SHOTS, type PortalShot } from "./screenshots";
+import { PORTAL_MOTION } from "./motion";
 
 /**
  * A browser window holding a real capture of the Peekaboo Care portal.
@@ -25,15 +26,7 @@ const src = PORTAL_SHOTS[shot];
 ---
 
 <PortalFrameChrome class={className}>
-  {/* The capture keeps its native ratio — never cropped, never stretched. */}
-  <Image
-    src={src}
-    alt={alt}
-    class="block h-auto w-full"
-    widths={[640, 960, 1280, 1920]}
-    sizes="(min-width: 1024px) 44rem, 100vw"
-    quality={78}
-    loading={eager ? "eager" : "lazy"}
-    decoding={eager ? "sync" : "async"}
-  />
+  {/* The capture keeps its native ratio — never cropped, never stretched —
+      and builds itself in when it scrolls into view (see motion.ts). */}
+  <AnimatedShot src={src} alt={alt} motion={PORTAL_MOTION[shot]} width={1400} quality={78} eager={eager} />
 </PortalFrameChrome>

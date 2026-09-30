@@ -1,6 +1,7 @@
 ---
-import { Image } from "astro:assets";
+import AnimatedShot from "./AnimatedShot.astro";
 import { APP_SHOTS, type AppShot } from "./screenshots";
+import { APP_MOTION } from "./motion";
 
 /**
  * A single app capture, filling whatever box it's placed in — no frame.
@@ -17,11 +18,12 @@ interface Props {
 const { shot, alt, eager = false } = Astro.props;
 ---
 
-<Image
+<AnimatedShot
   src={APP_SHOTS[shot]}
   alt={alt}
-  class="h-full w-full object-cover object-top"
+  motion={APP_MOTION[shot]}
+  width={402}
   quality={82}
-  loading={eager ? "eager" : "lazy"}
-  decoding={eager ? "sync" : "async"}
+  fit="fill"
+  eager={eager}
 />
