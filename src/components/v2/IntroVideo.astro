@@ -14,12 +14,27 @@ interface Props {
 const { t, lang, rtl } = Astro.props;
 
 /*
- * Chapter start times, in seconds, taken from the video's own frame timeline
- * (peekaboo-intro-v01). The opening "five tools" beat folds into the first
- * chapter — it is the setup for "Meet Peekaboo", not a module of its own.
- * If the video is re-cut, these are the only numbers that need to move.
+ * One cut per language. Chapter start times, in seconds, come from each
+ * video's own frame timeline (English: peekaboo-intro-v01; Arabic: the RTL
+ * rebuild in videos/peekaboo-arabic, cued to the Arabic narration). The opening
+ * "five tools" beat folds into the first chapter — it is the setup for "Meet
+ * Peekaboo", not a module of its own. If a video is re-cut, only its entry
+ * here needs to move.
  */
-const CHAPTERS = [0, 13.8, 19.36, 26.52, 32.04, 37.24] as const;
+const VIDEOS = {
+  en: {
+    src: "/video/peekaboo-intro.mp4",
+    poster: "/video/peekaboo-intro-poster.jpg",
+    chapters: [0, 13.8, 19.36, 26.52, 32.04, 37.24],
+  },
+  ar: {
+    src: "/video/peekaboo-intro-ar.mp4",
+    poster: "/video/peekaboo-intro-poster-ar.jpg",
+    chapters: [0, 13.7, 19.5, 26.65, 32.0, 37.3],
+  },
+} as const satisfies Record<Lang, { src: string; poster: string; chapters: readonly number[] }>;
+
+const { src, poster, chapters: CHAPTERS } = VIDEOS[lang];
 
 /* One accent per chapter, cycling the palette so the rail reads as playful
    rather than a row of identical grey pills. */
@@ -73,8 +88,8 @@ const Arrow = rtl ? ArrowLeft : ArrowRight;
         <div class="relative aspect-video overflow-hidden rounded-[1.6rem] bg-[#fffaf5]">
           <video
             class="absolute inset-0 h-full w-full object-cover"
-            src="/video/peekaboo-intro.mp4"
-            poster="/video/peekaboo-intro-poster.jpg"
+            src={src}
+            poster={poster}
             preload="none"
             playsinline
             aria-label={t.intro.videoLabel}

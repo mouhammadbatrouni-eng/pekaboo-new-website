@@ -65,7 +65,6 @@ export const ar: Dict = {
     videoLabel: "فيديو تعريفي عن بيكابو",
     replay: "شاهد مرة أخرى",
     endTitle: "مستعد لتجربته في مركزك؟",
-    languageNote: "الفيديو باللغة الإنجليزية",
   },
 
   plans: {
