@@ -539,6 +539,7 @@ export const en: Dict = {
         "An educator filling in a daily report in the app, choosing a child's mood and how much of breakfast they ate.",
       appMessages: "The Peekaboo Parent inbox, showing conversations with families and colleagues.",
       appProgress: "A child's progress analysis, showing curriculum coverage across each learning area.",
+      appPayments: "Payments in Peekaboo Parent, showing the balance due and each invoice marked due or paid.",
       appAssessmentReport:
         "The assessment report screen, listing each child's observations by learning area, filtered by class and date.",
     },

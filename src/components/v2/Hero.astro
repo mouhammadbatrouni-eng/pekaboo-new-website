@@ -139,7 +139,7 @@ const pointAccents = [
             stop above its feed (identifiable children below that line), which
             leaves it too short to pair with a phone. */}
         <div class="lg:pe-[118px] xl:pe-[132px]">
-          <PortalFrame shot="dashboard" alt={t.product.shots.portalDashboard} eager />
+          <PortalFrame shot="dashboard" alt={t.product.shots.portalDashboard} eager lang={lang} />
         </div>
         {/* Daily Report rather than the timeline: the timeline capture carries
             a named school in its post bodies and large, identifiable faces,
@@ -152,6 +152,7 @@ const pointAccents = [
               shot="dailyReport"
               alt={t.product.shots.appDailyReport}
               eager
+              lang={lang}
               class="max-w-none"
             />
           </div>
@@ -160,6 +161,7 @@ const pointAccents = [
           <PhoneFrame
             shot="dailyReport"
             alt={t.product.shots.appDailyReport}
+            lang={lang}
             class="max-w-[220px]"
           />
         </div>

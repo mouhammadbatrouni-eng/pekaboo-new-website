@@ -6,6 +6,17 @@ import appAssessmentReport from "../../assets/product/app-assessment-report.png"
 import portalDashboard from "../../assets/product/portal-dashboard-focus.webp";
 import portalCrm from "../../assets/product/portal-crm-focus.webp";
 import portalCommunication from "../../assets/product/portal-communication-focus.webp";
+import appPayments from "../../assets/product/app-payments.png";
+import arDailyReport from "../../assets/product/ar/app-daily-report.png";
+import arDailyReportCreate from "../../assets/product/ar/app-daily-report-create.png";
+import arMessages from "../../assets/product/ar/app-messages.png";
+import arProgress from "../../assets/product/ar/app-progress.png";
+import arAssessmentReport from "../../assets/product/ar/app-assessment-report.png";
+import arPayments from "../../assets/product/ar/app-payments.png";
+import arPortalDashboard from "../../assets/product/ar/portal-dashboard-focus.webp";
+import arPortalCrm from "../../assets/product/ar/portal-crm-focus.webp";
+import type { ImageMetadata } from "astro";
+import type { Lang } from "../../lib/i18n";
 
 /**
  * Real product captures, kept in one place so a section only names the screen
@@ -32,9 +43,13 @@ import portalCommunication from "../../assets/product/portal-communication-focus
  * Phone captures are 402×874 — the iPhone viewport the app is designed for,
  * but only 1×, so they are soft on retina screens and want re-exporting at 2×.
  *
- * Every capture is of the English UI. The portal and app are both bilingual, so
- * the Arabic page currently shows English screens — supply Arabic captures and
- * key them by language here if that matters.
+ * The Arabic page has its own set under `ar/`, picked by `appShot` and
+ * `portalShot` below. The two portal shots there are crops of Arabic portal
+ * captures, cut the same way (no module sidebar). The phone screens there, and
+ * Payments in both languages, are rebuilt in markup from the real app's
+ * artwork and its own Arabic strings (source: design/app-screens, rendered at
+ * 2x), because the parent app has no Arabic capture yet. `communication` has no
+ * Arabic capture, so it falls back to English.
  */
 export const APP_SHOTS = {
   /*
@@ -54,6 +69,8 @@ export const APP_SHOTS = {
   progress: appProgress,
   /** Assessment Report — observations per child, filtered by class. */
   assessmentReport: appAssessmentReport,
+  /** Payments — balance due and the invoice list. */
+  payments: appPayments,
 } as const;
 
 export const PORTAL_SHOTS = {
@@ -67,3 +84,32 @@ export const PORTAL_SHOTS = {
 
 export type AppShot = keyof typeof APP_SHOTS;
 export type PortalShot = keyof typeof PORTAL_SHOTS;
+
+const APP_SHOTS_AR: Record<AppShot, ImageMetadata> = {
+  dailyReport: arDailyReport,
+  dailyReportCreate: arDailyReportCreate,
+  messages: arMessages,
+  progress: arProgress,
+  assessmentReport: arAssessmentReport,
+  payments: arPayments,
+};
+
+const PORTAL_SHOTS_AR: Partial<Record<PortalShot, ImageMetadata>> = {
+  dashboard: arPortalDashboard,
+  crm: arPortalCrm,
+};
+
+/** The capture for this screen in this language. */
+export function appShot(shot: AppShot, lang: Lang = "en"): ImageMetadata {
+  return lang === "ar" ? APP_SHOTS_AR[shot] : APP_SHOTS[shot];
+}
+
+/** Whether the Arabic set has its own portal capture for this screen. */
+export function hasArabicPortalShot(shot: PortalShot): boolean {
+  return shot in PORTAL_SHOTS_AR;
+}
+
+/** The capture for this screen in this language (English when Arabic has none). */
+export function portalShot(shot: PortalShot, lang: Lang = "en"): ImageMetadata {
+  return (lang === "ar" && PORTAL_SHOTS_AR[shot]) || PORTAL_SHOTS[shot];
+}
