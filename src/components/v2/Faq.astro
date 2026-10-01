@@ -13,6 +13,11 @@ import type { Dict } from "../../lib/i18n";
  * the HTML for crawlers even though they're visually collapsed. The same
  * `t.faq.items` array is passed to BaseLayout for FAQPage structured data, so
  * the copy and the schema can never drift apart.
+ *
+ * With JavaScript, opening and closing are animated: the answer's height
+ * eases open while the text fades in, and closes the same way before the
+ * <details> actually shuts. Without it (or with reduced motion), the native
+ * instant toggle is unchanged.
  */
 interface Props {
   t: Dict;
@@ -31,10 +36,10 @@ const { t } = Astro.props;
       description={t.faq.body}
     />
 
-    <div class="mx-auto mt-14 max-w-3xl space-y-3">
+    <div class="mx-auto mt-14 max-w-3xl space-y-3" data-faq>
       {t.faq.items.map((item) => (
         <details
-          class="group rounded-2xl border border-line bg-surface px-6 shadow-soft transition-colors open:border-brand-300"
+          class="faq-item group rounded-2xl border border-line bg-surface px-6 shadow-soft transition-[border-color,box-shadow] duration-300"
           data-reveal
         >
           <summary
@@ -42,15 +47,93 @@ const { t } = Astro.props;
           >
             {item.question}
             <span
-              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line text-brand-ink transition-transform duration-200 group-open:rotate-45"
+              class="faq-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line text-brand-ink transition-[rotate,background-color,border-color] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
               aria-hidden="true"
             >
               <Plus size={16} />
             </span>
           </summary>
-          <p class="pb-6 pe-14 text-base leading-relaxed text-muted">{item.answer}</p>
+          <div class="overflow-hidden" data-faq-body>
+            <p class="pb-6 pe-14 text-base leading-relaxed text-muted">{item.answer}</p>
+          </div>
         </details>
       ))}
     </div>
   </Container>
 </ScrollSection>
+
+<style>
+  /*
+   * "Expanded" follows the visitor's intent, not the <details> state: while
+   * an answer is animating shut the element is still technically open, but
+   * the icon and border should already be on their way back. Without the
+   * script, `[open]` drives the same styles.
+   */
+  .faq-item[data-expanded="true"],
+  .faq-item[open]:not([data-expanded]) {
+    border-color: var(--color-brand-300);
+    box-shadow: var(--shadow-soft-lg);
+  }
+
+  .faq-item[data-expanded="true"] .faq-icon,
+  .faq-item[open]:not([data-expanded]) .faq-icon {
+    rotate: 45deg;
+    background-color: var(--color-brand-50);
+    border-color: var(--color-brand-200);
+  }
+</style>
+
+<script>
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const items = document.querySelectorAll<HTMLDetailsElement>("[data-faq] details");
+
+  for (const item of items) {
+    const summary = item.querySelector("summary");
+    const body = item.querySelector<HTMLElement>("[data-faq-body]");
+    if (!summary || !body) continue;
+
+    let want = item.open;
+    let anim: Animation | null = null;
+    item.dataset.expanded = String(want);
+
+    summary.addEventListener("click", (event) => {
+      if (reduce.matches || typeof body.animate !== "function") {
+        // Native toggle; just keep the styling state in step with it.
+        item.dataset.expanded = String(!item.open);
+        return;
+      }
+      event.preventDefault();
+
+      want = !want;
+      item.dataset.expanded = String(want);
+
+      // Start from wherever the answer is right now, so a second click mid-way
+      // reverses smoothly instead of jumping.
+      const from = item.open ? body.getBoundingClientRect().height : 0;
+      anim?.cancel();
+      item.open = true;
+      const full = body.scrollHeight;
+      const to = want ? full : 0;
+      const start = full ? from / full : 0;
+
+      anim = body.animate(
+        [
+          { height: `${from}px`, opacity: start, transform: `translateY(${(1 - start) * -8}px)` },
+          { height: `${to}px`, opacity: want ? 1 : 0, transform: want ? "none" : "translateY(-8px)" },
+        ],
+        {
+          duration: want ? 420 : 300,
+          easing: want ? "cubic-bezier(0.16, 1, 0.3, 1)" : "cubic-bezier(0.4, 0, 0.2, 1)",
+          // Hold the closed frame until <details> shuts, so the answer can't
+          // flash back to full height for a frame in between.
+          fill: "forwards",
+        },
+      );
+      anim.onfinish = () => {
+        if (!want) item.open = false;
+        anim?.cancel();
+        anim = null;
+      };
+    });
+  }
+</script>
