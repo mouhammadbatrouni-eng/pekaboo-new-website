@@ -1,0 +1,69 @@
+/* Peekaboo Parent app chrome, rebuilt from the real captures (402×874). */
+@font-face { font-family: "Baloo 2"; src: url("fonts/Baloo2.woff2") format("woff2"); font-weight: 400 800; }
+@font-face { font-family: "Baloo Bhaijaan 2"; src: url("fonts/BalooBhaijaan2.ttf") format("truetype"); font-weight: 400 800; }
+@font-face { font-family: "Manrope"; src: url("fonts/Manrope.woff2") format("woff2"); font-weight: 200 800; }
+@font-face { font-family: "Noto Sans Arabic"; src: url("fonts/NotoSansArabic.woff2") format("woff2"); font-weight: 100 900; }
+
+:root {
+  --ink: #151c34;
+  --ink-2: #3a4157;
+  --muted: #8b90a0;
+  --line: #eceef3;
+  --cyan: #3cb4e9;
+  --cyan-2: #19a3de;
+  --cyan-soft: #e6f6fd;
+  --gold-soft: #fdf3d6;
+  --head: "Baloo 2", "Baloo Bhaijaan 2", sans-serif;
+  --body: "Manrope", "Noto Sans Arabic", sans-serif;
+}
+[lang="ar"] {
+  --head: "Baloo Bhaijaan 2", sans-serif;
+  --body: "Noto Sans Arabic", "Manrope", sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 402px; height: 874px; overflow: hidden; background: #fff; }
+body { font-family: var(--body); color: var(--ink); -webkit-font-smoothing: antialiased; }
+
+.screen { position: relative; width: 402px; height: 874px; overflow: hidden; background: #fbfbfc; }
+
+/* header card */
+.hdr {
+  position: absolute; inset: 0 0 auto 0; height: 125px; z-index: 2;
+  display: flex; align-items: flex-end; gap: 12px; padding: 0 22px 26px;
+  background: #fff; border-radius: 0 0 30px 30px;
+  box-shadow: 0 1px 0 var(--line), 0 6px 18px rgba(21, 28, 52, 0.04);
+}
+.hdr .mark { width: 54px; height: 54px; flex: none; }
+.hdr .ttl { flex: 1; min-width: 0; }
+.hdr h1 { font-family: var(--head); font-weight: 800; font-size: 29px; line-height: 1.05; letter-spacing: -0.01em; white-space: nowrap; }
+[lang="ar"] .hdr h1 { letter-spacing: 0; font-size: 28px; line-height: 1.25; }
+.hdr p { font-size: 15px; color: var(--muted); margin-top: 3px; white-space: nowrap; }
+.gear { width: 46px; height: 46px; border-radius: 50%; background: var(--gold-soft); display: grid; place-items: center; flex: none; margin-bottom: 4px; }
+.gear svg { width: 24px; height: 24px; }
+
+/* body */
+.body { position: absolute; inset: 125px 0 93px 0; padding: 14px 16px 0; overflow: hidden; }
+
+.chips { display: flex; gap: 8px; white-space: nowrap; overflow: hidden; }
+.chip {
+  flex: none; height: 32px; padding: 0 14px; border-radius: 16px; display: inline-flex; align-items: center;
+  background: #fff; font-size: 13.5px; color: var(--ink-2); box-shadow: 0 2px 8px rgba(21, 28, 52, 0.06);
+}
+.chip.on { background: var(--cyan); color: #fff; box-shadow: none; }
+
+.card { background: #fff; border-radius: 26px; border: 1px solid var(--line); box-shadow: 0 6px 18px rgba(21, 28, 52, 0.05); }
+.avatar { border-radius: 50%; object-fit: cover; flex: none; }
+.muted { color: var(--muted); }
+.ic { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* tab bar */
+.nav {
+  position: absolute; inset: auto 0 0 0; height: 93px; z-index: 2;
+  display: flex; justify-content: space-around; align-items: center; padding: 0 8px 4px;
+  background: #fff; border-radius: 28px 28px 0 0; box-shadow: 0 -1px 0 var(--line), 0 -6px 18px rgba(21, 28, 52, 0.04);
+}
+.tab { width: 72px; height: 66px; border-radius: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; color: #7d8292; }
+.tab svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.tab span { font-size: 9.5px; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; }
+[lang="ar"] .tab span { font-size: 11px; letter-spacing: 0; font-weight: 600; }
+.tab.on { background: var(--cyan); color: #fff; box-shadow: 0 8px 18px rgba(60, 180, 233, 0.35); }

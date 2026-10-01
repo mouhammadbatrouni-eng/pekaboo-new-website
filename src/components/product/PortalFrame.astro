@@ -1,8 +1,9 @@
 ---
 import AnimatedShot from "./AnimatedShot.astro";
 import PortalFrameChrome from "./PortalFrameChrome.astro";
-import { PORTAL_SHOTS, type PortalShot } from "./screenshots";
-import { PORTAL_MOTION } from "./motion";
+import { portalShot, type PortalShot } from "./screenshots";
+import { portalMotion } from "./motion";
+import type { Lang } from "../../lib/i18n";
 
 /**
  * A browser window holding a real capture of the Peekaboo Care portal.
@@ -19,14 +20,16 @@ interface Props {
   class?: string;
   /** Above-the-fold frames should not lazy-load. */
   eager?: boolean;
+  /** Which language's capture to show. */
+  lang?: Lang;
 }
 
-const { shot, alt, class: className = "", eager = false } = Astro.props;
-const src = PORTAL_SHOTS[shot];
+const { shot, alt, class: className = "", eager = false, lang = "en" } = Astro.props;
+const src = portalShot(shot, lang);
 ---
 
 <PortalFrameChrome class={className}>
   {/* The capture keeps its native ratio — never cropped, never stretched —
       and builds itself in when it scrolls into view (see motion.ts). */}
-  <AnimatedShot src={src} alt={alt} motion={PORTAL_MOTION[shot]} width={1400} quality={78} eager={eager} />
+  <AnimatedShot src={src} alt={alt} motion={portalMotion(shot, lang)} width={1400} quality={78} eager={eager} />
 </PortalFrameChrome>

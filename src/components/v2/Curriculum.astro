@@ -11,7 +11,7 @@ interface Props {
   lang: Lang;
 }
 
-const { t } = Astro.props;
+const { t, lang } = Astro.props;
 ---
 
 <ScrollSection id="curriculum" label={t.nav.curriculum} surface="tint">
@@ -65,7 +65,7 @@ const { t } = Astro.props;
         {/* Held well under the 380px column: a phone capture at full column
             width would tower over the seven steps beside it. */}
         <div class="flex justify-center">
-          <PhoneFrame shot="assessmentReport" alt={t.product.shots.appAssessmentReport} class="max-w-[262px]" />
+          <PhoneFrame shot="assessmentReport" alt={t.product.shots.appAssessmentReport} lang={lang} class="max-w-[262px]" />
         </div>
         <p class="mt-4 text-center text-sm leading-relaxed text-subtle">{t.curriculum.plannerCaption}</p>
       </div>

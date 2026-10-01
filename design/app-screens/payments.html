@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="kit.css" />
+<style>
+  .body { padding-top: 16px; }
+  .balance {
+    position: relative; overflow: hidden; border-radius: 28px; padding: 20px 22px 20px; color: #fff;
+    background: radial-gradient(120% 140% at 100% 0%, #6fd0f6 0%, #2fb0e8 45%, #1595d4 100%);
+    box-shadow: 0 14px 28px rgba(31, 160, 222, 0.32);
+  }
+  .balance .lbl { font-size: 13px; font-weight: 600; opacity: 0.9; }
+  .balance .amt { font-family: var(--head); font-weight: 800; font-size: 40px; line-height: 1.15; margin-top: 4px; }
+  [lang="ar"] .balance .amt { font-family: "Baloo 2", sans-serif; line-height: 1.2; }
+  .balance .due { font-size: 13px; opacity: 0.9; margin-top: 2px; }
+  .balance .pay {
+    position: absolute; inset-inline-end: 18px; bottom: 20px; height: 42px; padding: 0 18px; border-radius: 21px;
+    background: #fff; color: var(--cyan-2); font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 6px;
+    box-shadow: 0 6px 14px rgba(9, 70, 110, 0.18);
+  }
+  .balance .pay .ic { width: 16px; height: 16px; }
+  .balance .ring { position: absolute; inset-inline-end: -40px; top: -60px; width: 170px; height: 170px; border-radius: 50%; border: 22px solid rgba(255, 255, 255, 0.12); }
+  .balance .bird { position: absolute; inset-inline-end: 26px; top: 18px; width: 54px; height: 54px; }
+  .chips { margin-top: 16px; }
+  .sec-h { display: flex; align-items: baseline; justify-content: space-between; margin: 18px 4px 10px; }
+  .sec-h b { font-family: var(--head); font-weight: 800; font-size: 19px; }
+  .sec-h span { font-size: 12.5px; color: var(--muted); }
+  .inv { display: flex; align-items: center; gap: 12px; padding: 12px 14px; margin-bottom: 9px; border-radius: 22px; }
+  .inv .tile { width: 46px; height: 46px; border-radius: 16px; display: grid; place-items: center; flex: none; }
+  .inv .tile .ic { width: 22px; height: 22px; }
+  .inv .tile.due { background: #fff4d9; color: #d69a10; }
+  .inv .tile.paid { background: #e5f7ee; color: #2f9e63; }
+  .inv .txt { flex: 1; min-width: 0; }
+  .inv .txt b { display: block; font-size: 15px; font-weight: 700; line-height: 1.35; }
+  .inv .txt small { font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+  .inv .side { text-align: end; flex: none; }
+  .inv .side b { display: block; font-size: 15px; font-weight: 700; }
+  .pill { display: inline-flex; align-items: center; gap: 3px; height: 22px; padding: 0 9px; border-radius: 11px; font-size: 11px; font-weight: 700; margin-top: 3px; }
+  .pill .ic { width: 11px; height: 11px; stroke-width: 3.2; }
+  .pill.due { background: #fff4d9; color: #b7800a; }
+  .pill.paid { background: #e5f7ee; color: #2f9e63; }
+</style>
+</head>
+<body>
+<div class="screen">
+  <header class="hdr">
+    <img class="mark" src="img/bird.png" alt="" />
+    <div class="ttl"><h1 data-t="title"></h1><p data-t="sub"></p></div>
+    <div class="gear"><span data-icon="gear"></span></div>
+  </header>
+
+  <main class="body">
+    <section class="balance" data-band="balance">
+      <div class="ring"></div>
+      <p class="lbl" data-t="balance"></p>
+      <p class="amt"><bdi>AED 950</bdi></p>
+      <p class="due" data-t="dueOn"></p>
+      <span class="pay" data-tap="pay"><span data-icon="card"></span><span data-t="pay"></span></span>
+    </section>
+
+    <div class="chips" data-band="chips"><span class="chip on" data-t="all"></span><span class="chip" data-t="due"></span><span class="chip" data-t="paid"></span></div>
+
+    <div class="sec-h"><b data-t="invoices"></b><span data-t="count"></span></div>
+    <div id="list" data-band="list"></div>
+  </main>
+</div>
+<script src="kit.js"></script>
+<script>
+  const lang = new URLSearchParams(location.search).get("lang") || "en";
+  document.documentElement.lang = lang;
+  if (lang === "ar") document.querySelector(".screen").dir = "rtl";
+  const T = {
+    en: { title: "Payments", sub: "Fees & invoices", balance: "Balance due", dueOn: "Due 30 August", pay: "Pay now", all: "All", due: "Due", paid: "Paid", invoices: "Invoices", count: "4 this term",
+      rows: [["August fees", "INV-1042 · Due 30 Aug", "AED 950", "due"], ["July fees", "INV-1031 · Paid 28 Jul", "AED 950", "paid"], ["Summer camp", "INV-1027 · Paid 2 Jul", "AED 420", "paid"], ["June fees", "INV-1020 · Paid 29 Jun", "AED 950", "paid"]] },
+    ar: { title: "المدفوعات", sub: "الرسوم والفواتير", balance: "الرصيد المستحق", dueOn: "يُستحق في 30 أغسطس", pay: "ادفع الآن", all: "الكل", due: "مستحق", paid: "مدفوع", invoices: "الفواتير", count: "4 هذا الفصل",
+      rows: [["رسوم أغسطس", "INV-1042 · يُستحق في 30 أغسطس", "AED 950", "due"], ["رسوم يوليو", "INV-1031 · دُفعت في 28 يوليو", "AED 950", "paid"], ["المخيم الصيفي", "INV-1027 · دُفعت في 2 يوليو", "AED 420", "paid"], ["رسوم يونيو", "INV-1020 · دُفعت في 29 يونيو", "AED 950", "paid"]] },
+  }[lang];
+  document.querySelectorAll("[data-t]").forEach((el) => (el.textContent = T[el.dataset.t]));
+  document.getElementById("list").innerHTML = T.rows
+    .map(([name, meta, amt, st], i) => `
+      <div class="card inv" data-row="${i}">
+        <span class="tile ${st}"><span data-icon="receipt"></span></span>
+        <div class="txt"><b>${name}</b><small>${meta}</small></div>
+        <div class="side"><b><bdi>${amt}</bdi></b><span class="pill ${st}">${st === "paid" ? '<span data-icon="check"></span>' : ""}${T[st]}</span></div>
+      </div>`)
+    .join("");
+  chrome({ active: "more" });
+</script>
+</body>
+</html>
