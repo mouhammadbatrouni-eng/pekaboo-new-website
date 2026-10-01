@@ -1,4 +1,5 @@
 import type { AppShot, PortalShot } from "./screenshots";
+import type { Lang } from "../../lib/i18n";
 
 /**
  * Motion maps for the product captures.
@@ -130,6 +131,24 @@ export const APP_MOTION: Record<AppShot, ShotMotion> = {
     pulses: [{ at: [337, 348], r: 14 }],
     taps: [[347, 688]],
   },
+  payments: {
+    ref: PHONE,
+    veil: PHONE_VEIL,
+    bands: [
+      { y: [0, 125], fixed: true },
+      { y: [125, 277] },
+      { y: [277, 325] },
+      { y: [325, 370] },
+      { y: [370, 452] },
+      { y: [452, 533] },
+      { y: [533, 614] },
+      { y: [614, 695] },
+      { y: [695, 781] },
+      { y: [781, 874], fixed: true },
+    ],
+    pulses: [{ at: [348, 421], r: 12 }],
+    taps: [[311, 228]],
+  },
 };
 
 export const PORTAL_MOTION: Record<PortalShot, ShotMotion> = {
@@ -195,3 +214,164 @@ export const PORTAL_MOTION: Record<PortalShot, ShotMotion> = {
     ],
   },
 };
+
+/*
+ * Arabic set. The screens are right-to-left, so every tap, pulse and hop sits
+ * on the mirrored side, and the progress/occupancy bars fill from the right —
+ * the left-to-right wipes are left out rather than shown running backwards.
+ */
+const APP_MOTION_AR: Record<AppShot, ShotMotion> = {
+  dailyReport: {
+    ref: PHONE,
+    veil: PHONE_VEIL,
+    bands: [
+      { y: [0, 125], fixed: true },
+      { y: [125, 180] },
+      { y: [180, 632] },
+      { y: [632, 781] },
+      { y: [781, 874], fixed: true },
+    ],
+    pulses: [{ at: [43, 237], r: 10, tone: "green" }],
+    taps: [
+      [349, 590],
+      [76, 590],
+    ],
+  },
+  dailyReportCreate: {
+    ref: PHONE,
+    veil: PHONE_VEIL,
+    bands: [
+      { y: [0, 125], fixed: true },
+      { y: [125, 282] },
+      { y: [282, 482] },
+      { y: [482, 705] },
+      { y: [705, 781] },
+      { y: [781, 874], fixed: true },
+    ],
+    taps: [
+      [328, 402],
+      [312, 611],
+      [106, 740],
+    ],
+  },
+  messages: {
+    ref: PHONE,
+    veil: PHONE_VEIL,
+    bands: [
+      { y: [0, 125], fixed: true },
+      { y: [125, 203] },
+      { y: [203, 247] },
+      { y: [247, 423] },
+      { y: [423, 598] },
+      { y: [598, 781] },
+      { y: [781, 874], fixed: true },
+    ],
+    pulses: [{ at: [35, 257], r: 10 }],
+    taps: [[351, 729]],
+  },
+  progress: {
+    ref: PHONE,
+    veil: "#ffffff",
+    bands: [
+      { y: [0, 125], fixed: true },
+      { y: [125, 392] },
+      { y: [392, 433] },
+      { y: [433, 466] },
+      { y: [466, 499] },
+      { y: [499, 532] },
+      { y: [532, 565] },
+      { y: [565, 598] },
+      { y: [598, 631] },
+      { y: [631, 670] },
+      { y: [670, 750] },
+      { y: [750, 874] },
+    ],
+    taps: [[201, 711]],
+  },
+  assessmentReport: {
+    ref: PHONE,
+    veil: PHONE_VEIL,
+    bands: [
+      { y: [0, 125], fixed: true },
+      { y: [125, 196] },
+      { y: [196, 257] },
+      { y: [257, 302] },
+      { y: [302, 655] },
+      { y: [655, 781] },
+      { y: [781, 874], fixed: true },
+    ],
+    pulses: [{ at: [55, 346], r: 14 }],
+    taps: [[52, 736]],
+  },
+  payments: {
+    ref: PHONE,
+    veil: PHONE_VEIL,
+    bands: [
+      { y: [0, 125], fixed: true },
+      { y: [125, 299] },
+      { y: [299, 347] },
+      { y: [347, 395] },
+      { y: [395, 497] },
+      { y: [497, 598] },
+      { y: [598, 699] },
+      { y: [699, 781] },
+      { y: [781, 874], fixed: true },
+    ],
+    pulses: [{ at: [59, 460], r: 12 }],
+    taps: [[89, 250]],
+  },
+};
+
+const PORTAL_MOTION_AR: Partial<Record<PortalShot, ShotMotion>> = {
+  dashboard: {
+    ref: [1100, 720],
+    veil: PORTAL_VEIL,
+    bands: [
+      { y: [0, 60], fixed: true },
+      { y: [60, 172] },
+      { y: [172, 232] },
+      { y: [232, 345], xs: [0, 371, 729, 1100] },
+      { y: [345, 720], xs: [0, 371, 729, 1100] },
+    ],
+    pulses: [
+      { at: [78, 123], r: 8, tone: "green" },
+      { at: [549, 437], r: 16, tone: "green" },
+    ],
+  },
+  crm: {
+    ref: [1100, 734],
+    veil: PORTAL_VEIL,
+    bands: [
+      { y: [0, 72], fixed: true },
+      { y: [72, 185] },
+      { y: [185, 245] },
+      { y: [245, 352], xs: [0, 229, 443, 656, 864, 1100] },
+      { y: [352, 462], xs: [0, 229, 443, 656, 864, 1100] },
+      { y: [462, 500] },
+      { y: [500, 548] },
+      { y: [548, 598] },
+      { y: [598, 640] },
+      { y: [640, 700] },
+      { y: [700, 734] },
+    ],
+    // The pipeline, read right to left: total → new → tour booked → toured → approved.
+    hops: [
+      [878, 254, 202, 96],
+      [450, 254, 200, 96],
+      [235, 254, 202, 96],
+      [20, 254, 203, 96],
+      [663, 363, 187, 97],
+    ],
+    pulses: [{ at: [609, 649], r: 13 }],
+  },
+};
+
+/** The motion map for this screen in this language. */
+export function appMotion(shot: AppShot, lang: Lang = "en"): ShotMotion {
+  return lang === "ar" ? APP_MOTION_AR[shot] : APP_MOTION[shot];
+}
+
+/** The motion map for this portal screen in this language (English when Arabic has no capture). */
+export function portalMotion(shot: PortalShot, lang: Lang = "en"): ShotMotion {
+  return (lang === "ar" && PORTAL_MOTION_AR[shot]) || PORTAL_MOTION[shot];
+}

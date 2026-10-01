@@ -15,7 +15,7 @@ interface Props {
   lang: Lang;
 }
 
-const { t } = Astro.props;
+const { t, lang } = Astro.props;
 
 /**
  * Which product surface anchors each spotlight — matched by position. Every one
@@ -73,11 +73,11 @@ const CARD_META = [
 
             <figure data-reveal data-reveal-delay="100">
               {visual.kind === "portalShot" && (
-                <PortalFrame shot={visual.shot} alt={t.product.shots[visual.altKey]} />
+                <PortalFrame shot={visual.shot} alt={t.product.shots[visual.altKey]} lang={lang} />
               )}
               {visual.kind === "appShot" && (
                 <div class="flex justify-center">
-                  <PhoneFrame shot={visual.shot} alt={t.product.shots[visual.altKey]} class="max-w-[248px]" />
+                  <PhoneFrame shot={visual.shot} alt={t.product.shots[visual.altKey]} lang={lang} class="max-w-[248px]" />
                 </div>
               )}
               <figcaption class="mt-4 text-center text-sm text-subtle">{spotlight.caption}</figcaption>

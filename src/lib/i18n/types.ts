@@ -323,6 +323,7 @@ export interface Dict {
       appDailyReportCreate: string;
       appMessages: string;
       appProgress: string;
+      appPayments: string;
       appAssessmentReport: string;
     };
     observationToJournal: string;

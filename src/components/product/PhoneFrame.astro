@@ -1,6 +1,7 @@
 ---
 import PhoneScreenshot from "./PhoneScreenshot.astro";
 import type { AppShot } from "./screenshots";
+import type { Lang } from "../../lib/i18n";
 
 /**
  * A phone bezel holding a real capture of the Peekaboo Parent app.
@@ -10,8 +11,7 @@ import type { AppShot } from "./screenshots";
  * gives us. Captures already carry the app's header and tab bar, so this
  * component adds no chrome of its own beyond the device.
  *
- * Pass `shot` for a capture, or use the slot for the few screens still drawn
- * in markup (see CodedAppScreen).
+ * Pass `shot` for a capture, or use the slot for anything else.
  */
 interface Props {
   shot?: AppShot;
@@ -22,9 +22,11 @@ interface Props {
   eager?: boolean;
   /** Layered frames need the screen itself to establish a stacking context. */
   stack?: boolean;
+  /** Which language's capture to show. */
+  lang?: Lang;
 }
 
-const { shot, alt = "", class: className = "", eager = false, stack = false } = Astro.props;
+const { shot, alt = "", class: className = "", eager = false, stack = false, lang = "en" } = Astro.props;
 ---
 
 <div
@@ -39,7 +41,7 @@ const { shot, alt = "", class: className = "", eager = false, stack = false } = 
       stack && "isolate",
     ]}
   >
-    {shot ? <PhoneScreenshot shot={shot} alt={alt} eager={eager} /> : <slot />}
+    {shot ? <PhoneScreenshot shot={shot} alt={alt} eager={eager} lang={lang} /> : <slot />}
 
     {/* A hairline inside the bezel keeps light captures from bleeding into it. */}
     <div

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="kit.css" />
+<style>
+  .report { padding: 16px 16px 14px; margin-top: 14px; }
+  .who { display: flex; align-items: center; gap: 12px; }
+  .who img { width: 44px; height: 44px; }
+  .who b { font-size: 17px; font-weight: 600; display: block; line-height: 1.35; }
+  .who small { font-size: 13px; color: var(--muted); }
+  .who .seen { margin-inline-start: auto; color: #3bb27a; }
+  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+  .fact { display: flex; align-items: center; gap: 7px; height: 44px; padding: 0 8px; border: 1px solid var(--line); border-radius: 22px; min-width: 0; }
+  .fact img { width: 30px; height: 30px; object-fit: contain; flex: none; border-radius: 50%; }
+  .fact .t { font-size: 11.5px; line-height: 1.25; white-space: nowrap; overflow: hidden; }
+  .fact .t b { font-weight: 700; }
+  .fact .t small { display: block; font-size: 10px; color: var(--muted); }
+  .need-h { display: flex; align-items: center; gap: 6px; margin: 16px 2px 10px; font-weight: 700; font-size: 15px; }
+  .need-h .ic { color: var(--cyan); width: 18px; height: 18px; }
+  .needs { display: flex; gap: 7px; overflow: hidden; }
+  .need { flex: none; width: 66px; height: 92px; border: 1px solid var(--line); border-radius: 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+  .need img { width: 50px; height: 50px; object-fit: contain; }
+  .need span { font-size: 11px; color: var(--ink-2); white-space: nowrap; }
+  .meta { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; font-size: 12px; }
+  .meta .src { color: #a35ad8; font-weight: 600; }
+  .meta .src i { color: var(--muted); font-style: normal; font-weight: 400; }
+  .meta .by { display: flex; align-items: center; gap: 4px; font-weight: 600; }
+  .meta .by .ic { width: 14px; height: 14px; }
+  .acts { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+  .round { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; color: var(--ink-2); }
+  .round .ic { width: 18px; height: 18px; }
+  .tr { margin-inline-start: auto; height: 38px; padding: 0 16px; border-radius: 19px; background: var(--cyan-soft); color: var(--cyan-2); display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; }
+  .tr .ic { width: 16px; height: 16px; }
+</style>
+</head>
+<body>
+<div class="screen" dir="rtl">
+  <header class="hdr" style="align-items:center;padding-bottom:0;padding-top:34px">
+    <img class="mark" src="img/bird.png" alt="" />
+    <div class="ttl"><h1>التقرير اليومي</h1></div>
+    <div class="gear"><span data-icon="gear"></span></div>
+  </header>
+
+  <main class="body">
+    <div class="chips" data-band="chips">
+      <span class="chip on">جميع الفصول</span><span class="chip">الزرافة</span><span class="chip">البطريق</span><span class="chip">الأرنب</span><span class="chip">الأحمر</span>
+    </div>
+
+    <section class="card report" data-band="card1">
+      <div class="who">
+        <img class="avatar" src="img/sofia.png" alt="" />
+        <div><b>لين خالد</b><small>الاثنين، 16 فبراير 2026</small></div>
+        <span class="seen" data-icon="checks"></span>
+      </div>
+      <div class="facts">
+        <div class="fact"><img src="img/a18.png" alt="" /><div class="t">كنتُ اليوم <b>سعيدة</b><small>المزاج</small></div></div>
+        <div class="fact"><img src="img/a23.png" alt="" /><div class="t">تناولتُ <b>معظمها</b><small>الإفطار</small></div></div>
+        <div class="fact"><img src="img/a29.png" alt="" /><div class="t">تناولتُ <b>القليل</b><small>الغداء</small></div></div>
+        <div class="fact"><img src="img/a35.png" alt="" /><div class="t">تناولتُ <b>الدواء</b><small>الدواء</small></div></div>
+      </div>
+      <div class="need-h"><span data-icon="box"></span>نحتاج إلى</div>
+      <div class="needs" data-band="needs">
+        <div class="need"><img src="img/a37.png" alt="" /><span>حفاضات</span></div>
+        <div class="need"><img src="img/a38.png" alt="" /><span>ملابس</span></div>
+        <div class="need"><img src="img/a39.png" alt="" /><span>مناديل مبللة</span></div>
+        <div class="need"><img src="img/a40.png" alt="" /><span>كريم</span></div>
+        <div class="need"><img src="img/a41.png" alt="" /><span>حليب أطفال</span></div>
+      </div>
+      <div class="meta">
+        <span class="src">تقرير يومي <i>• منذ 13 دقيقة</i></span>
+        <span class="by"><span data-icon="user"></span>مريم</span>
+      </div>
+      <div class="acts" data-band="acts">
+        <span class="round" data-tap="like"><span data-icon="heart"></span></span>
+        <span class="round"><span data-icon="bubble"></span></span>
+        <span class="round"><span data-icon="eye"></span></span>
+        <span class="tr" data-tap="translate"><span data-icon="translate"></span>ترجمة</span>
+      </div>
+    </section>
+
+    <section class="card report" data-band="card2">
+      <div class="who">
+        <img class="avatar" src="img/sofia.png" alt="" />
+        <div><b>لين خالد</b><small>الأحد، 15 فبراير 2026</small></div>
+        <span class="seen" data-icon="checks"></span>
+      </div>
+      <div class="facts">
+        <div class="fact"><img src="img/a19.png" alt="" /><div class="t">كنتُ اليوم <b>مستقرة</b><small>المزاج</small></div></div>
+        <div class="fact"><img src="img/a22.png" alt="" /><div class="t">تناولتُ <b>الكل</b><small>الإفطار</small></div></div>
+      </div>
+    </section>
+  </main>
+</div>
+<script src="kit.js"></script>
+<script>chrome({ active: null });</script>
+</body>
+</html>

@@ -4,35 +4,34 @@ import ScrollSection from "./ScrollSection.astro";
 import SectionIntro from "./SectionIntro.astro";
 import PhoneFrame from "../product/PhoneFrame.astro";
 import PhoneScreenshot from "../product/PhoneScreenshot.astro";
-import CodedAppScreen from "../product/CodedAppScreen.astro";
-import ParentPaymentsScreen from "../product/ParentPaymentsScreen.astro";
 import FeatureIcon from "../ui/FeatureIcon.astro";
-import type { Dict } from "../../lib/i18n";
+import type { Dict, Lang } from "../../lib/i18n";
 import type { AppShot } from "../product/screenshots";
 
 interface Props {
   t: Dict;
+  lang: Lang;
   rtl: boolean;
 }
 
-const { t, rtl } = Astro.props;
+const { t, lang } = Astro.props;
 
 /**
  * Screens and icons stay in code; the words come from the dictionary.
  *
- * Each beat shows the app screen it is actually describing. Payments has no
- * capture yet, so that one beat still draws its screen in markup — give it a
- * `shot` as soon as a real one exists.
+ * Each beat shows the app screen it is actually describing.
  */
-type BeatVisual =
-  | { shot: AppShot; altKey: "appDailyReport" | "appMessages" | "appProgress"; icon: string }
-  | { shot: null; icon: string };
+type BeatVisual = {
+  shot: AppShot;
+  altKey: "appDailyReport" | "appMessages" | "appProgress" | "appPayments";
+  icon: string;
+};
 
 const BEAT_META: BeatVisual[] = [
   { shot: "dailyReport", altKey: "appDailyReport", icon: "timeline" },
   { shot: "messages", altKey: "appMessages", icon: "communication" },
   { shot: "progress", altKey: "appProgress", icon: "curriculum" },
-  { shot: null, icon: "finance" },
+  { shot: "payments", altKey: "appPayments", icon: "finance" },
 ];
 
 const total = t.app.beats.length;
@@ -69,15 +68,7 @@ const total = t.app.beats.length;
                 {/* Mobile: each beat carries its own phone, so the story reads
                     top-to-bottom without any sticky behaviour. */}
                 <div class="mt-8 flex justify-center lg:hidden">
-                  {visual.shot ? (
-                    <PhoneFrame shot={visual.shot} alt={t.product.shots[visual.altKey]} class="max-w-[236px]" />
-                  ) : (
-                    <PhoneFrame class="max-w-[236px]">
-                      <CodedAppScreen title={beat.title} rtl={rtl}>
-                        <ParentPaymentsScreen />
-                      </CodedAppScreen>
-                    </PhoneFrame>
-                  )}
+                  <PhoneFrame shot={visual.shot} alt={t.product.shots[visual.altKey]} lang={lang} class="max-w-[236px]" />
                 </div>
               </div>
             );
@@ -98,13 +89,7 @@ const total = t.app.beats.length;
                   style={index === 0 ? "opacity:1" : "opacity:0"}
                   aria-hidden={index === 0 ? undefined : "true"}
                 >
-                  {visual.shot ? (
-                    <PhoneScreenshot shot={visual.shot} alt={t.product.shots[visual.altKey]} />
-                  ) : (
-                    <CodedAppScreen title={t.app.beats[index].title} rtl={rtl}>
-                      <ParentPaymentsScreen />
-                    </CodedAppScreen>
-                  )}
+                  <PhoneScreenshot shot={visual.shot} alt={t.product.shots[visual.altKey]} lang={lang} />
                 </div>
               ))}
             </PhoneFrame>
